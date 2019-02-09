@@ -45,6 +45,7 @@ class Thread extends AbstractSeed
                 $threadCreator->logIp($faker->boolean ? $faker->ipv6 : $faker->ipv4);
             }
 
+            $threadCreator->setTags($faker->words($faker->numberBetween(10, 15)));
             $threadCreator->setContent(Lorem::sentence(), $faker->text);
             if ($threadCreator->validate($errors))
             {
