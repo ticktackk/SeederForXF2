@@ -24,7 +24,7 @@ class Thread extends AbstractSeed
      */
     public function getLimit(): int
     {
-        return $this->faker()->numberBetween(5000, 1000);
+        return $this->faker()->numberBetween(5000, 10000);
     }
 
     /**
