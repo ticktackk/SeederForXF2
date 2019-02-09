@@ -35,8 +35,8 @@ class User extends AbstractSeed
         /** @var \XF\Service\User\Registration $registrationService */
         $registrationService = $this->service('XF:User\Registration');
         $registrationService->setMapped([
-            'username' => $faker->firstName . '_' . $faker->lastName,
-            'email' => $faker->email,
+            'username' => $faker->boolean ? $faker->userName : $faker->firstName . '_' . $faker->lastName,
+            'email' => $faker->userName . '_' . $faker->email,
             'timezone' => $faker->timezone,
             'location' => $faker->boolean ? $faker->city : ''
         ]);
@@ -46,6 +46,12 @@ class User extends AbstractSeed
         $dob = explode('-', $faker->dateTimeThisCentury->format('d-m-Y'));
         $registrationService->setDob($dob[0], $dob[1], $dob[2]);
         $registrationService->skipEmailConfirmation();
+        $registrationService->setReceiveAdminEmail($faker->boolean);
+
+        if ($faker->boolean)
+        {
+            $registrationService->setAvatarUrl($faker->imageUrl());
+        }
 
         if ($registrationService->validate($errors))
         {
