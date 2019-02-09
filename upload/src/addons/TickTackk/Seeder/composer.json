@@ -1,0 +1,8 @@
+{
+    "config": {
+        "vendor-dir": "_vendor"
+	},
+    "require": {
+        "fzaninotto/faker": "^1.8"
+    }
+}

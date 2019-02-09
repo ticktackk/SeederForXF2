@@ -1,0 +1,5 @@
+{
+    "content_type": "forum",
+    "field_name": "seed_handler_class",
+    "field_value": "TickTackk\\Seeder\\Seed\\Forum"
+}

@@ -1,0 +1,27 @@
+{
+    "legacy_addon_id": "",
+    "title": "Seeder",
+    "description": "This add-on helps in filling development board with dummy data.",
+    "version_id": 1000011,
+    "version_string": "1.0.0 Alpha 1",
+    "dev": "TickTackk",
+    "dev_url": "https://xenforo.com/community/members/batpool52.90375/",
+    "faq_url": "",
+    "support_url": "",
+    "extra_urls": {
+        "Twitter": "https://twitter.com/t1cktackk",
+        "Discord": "https://discord.gg/qdwgUpP"
+    },
+    "require": {
+        "XF": [
+            2010070,
+            "XenForo 2.1.0+"
+        ],
+        "php": [
+            "7.2.0",
+            "PHP 7.2.0+"
+        ]
+    },
+    "icon": "fa-seedling",
+	"composer_autoload": "_vendor/composer"
+}
