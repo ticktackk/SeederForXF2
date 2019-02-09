@@ -44,7 +44,7 @@ class Seeder extends Command
         /** @var \TickTackk\Seeder\Repository\Seed $seedRepo */
         $seedRepo = \XF::app()->repository('TickTackk\Seeder:Seed');
         $contentType = $input->getOption('content-type');
-        $orderedSeeds = $seedRepo->getOrderedSeeds(!empty($contentType) ? $contentType : null);
+        $orderedSeeds = $seedRepo->getOrderedSeeds(!empty($contentType) ? [$contentType] : null);
 
         $this->setupAndRunJob('tckSeeder' . (!empty($contentType) ? '_' . $contentType : ''), 'TickTackk\Seeder:Seed', [
             'seeds' => $orderedSeeds
