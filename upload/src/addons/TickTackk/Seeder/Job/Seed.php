@@ -37,7 +37,20 @@ class Seed extends AbstractJob
             $this->data['currentSeed'] = reset($this->data['seeds']);
         }
 
-        $currentSeed = $this->data['currentSeed'];
+        $currentSeed = $this->getCurrentSeed();
+        if (isset($this->data['seedStats'][$currentSeed]))
+        {
+            if ($this->getDoneForCurrentSeed() >= $this->getLimitForCurrentSeed())
+            {
+                $currentSeed = $this->getNextSeed();
+                if ($currentSeed === null)
+                {
+                    return $this->complete();
+                }
+
+                $this->data['currentSeed'] = $currentSeed;
+            }
+        }
 
         /** @var \TickTackk\Seeder\Repository\Seed $seedRepo */
         $seedRepo = $this->app->repository('TickTackk\Seeder:Seed');
@@ -53,11 +66,6 @@ class Seed extends AbstractJob
                 ];
             }
 
-            if ($this->data['seedStats'][$currentSeed]['done'] >= $this->data['seedStats'][$currentSeed]['limit'])
-            {
-                return $this->complete();
-            }
-
             do
             {
                 $seedHandler->run();
@@ -67,17 +75,6 @@ class Seed extends AbstractJob
                 $timeRemaining = $maxRunTime - (microtime(true) - $startTime);
             }
             while (!$hasSeededAll && $timeRemaining >= 1);
-
-            if ($hasSeededAll)
-            {
-                $nextSeed = $this->getNextSeed();
-                if ($nextSeed === null)
-                {
-                    return $this->complete();
-                }
-
-                $this->data['currentSeed'] = $nextSeed;
-            }
         }
 
         return $this->resume();
