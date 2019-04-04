@@ -27,12 +27,13 @@ abstract class AbstractNode extends AbstractSeed
     /**
      * @return array
      */
-    protected function getNodeInput()
+    protected function getNodeInput() : array
     {
         $faker = $this->faker();
+        $parentNode = $this->getRandomParentNode();
 
-        $input = [
-            'parent_node_id' => 0,
+        return [
+            'parent_node_id' => $parentNode ? $parentNode->node_id : 0,
             'title' => implode(' ', Lorem::words()),
             'description' => $faker->paragraph,
             'display_order' => $faker->randomNumber(),
@@ -40,14 +41,6 @@ abstract class AbstractNode extends AbstractSeed
             'style_id' => 0,
             'navigation_id' => 'str',
         ];
-
-        if ($this->faker()->boolean)
-        {
-            $parentNode = $this->getRandomParentNode();
-            $input['parent_node_id'] = $parentNode->node_id;
-        }
-
-        return $input;
     }
 
     /**

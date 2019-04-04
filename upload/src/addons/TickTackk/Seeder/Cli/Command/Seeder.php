@@ -21,12 +21,12 @@ class Seeder extends Command
     {
         $this
             ->setName('tck-seeder:seed')
-            ->setDescription('Runs all the seeds to fill your forum with dummy data.')
+            ->setDescription('Runs the seeds to fill your forum with dummy data.')
             ->addOption(
-                'content-type',
+                'seed',
                 't',
                 InputOption::VALUE_OPTIONAL,
-                'Run specific seed instead of all'
+                'Name of the specific seed which should be used for seeding.'
             );
     }
 
@@ -41,13 +41,20 @@ class Seeder extends Command
     {
         \XF::db()->logQueries(false);
 
-        /** @var \TickTackk\Seeder\Repository\Seed $seedRepo */
-        $seedRepo = \XF::app()->repository('TickTackk\Seeder:Seed');
-        $contentType = $input->getOption('content-type');
-        $orderedSeeds = $seedRepo->getOrderedSeeds(!empty($contentType) ? [$contentType] : null);
+        $seedNames = [];
+        $seedName = $input->getOption('seed');
 
-        $this->setupAndRunJob('tckSeeder' . (!empty($contentType) ? '_' . $contentType : ''), 'TickTackk\Seeder:Seed', [
-            'seeds' => $orderedSeeds
+        if ($seedName)
+        {
+            $seedNames = [$seedName];
+        }
+        else
+        {
+            \XF::fire('seed_list', [\XF::app(), &$seedNames]);
+        }
+
+        $this->setupAndRunJob('tckSeeder' . \count($seedNames) === 1 ? '_' . reset($seedNames) : '', 'TickTackk\Seeder:Seed', [
+            'seeds' => $seedNames
         ], $output);
 
         return 0;

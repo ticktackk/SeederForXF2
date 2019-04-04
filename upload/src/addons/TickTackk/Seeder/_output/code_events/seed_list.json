@@ -1,0 +1,3 @@
+{
+    "description": "<p>Called when the seed list is accessed.</p>\n\n<p>Callback signature:</p>\n<blockquote><code><em>\\XF\\App</em> $app</code></blockquote>\n\n<p>Arguments:</p>\n<ol>\n\t<li><code><em>\\XF\\App</em> $app</code> - Global App object.</li>\n\t<li><code><em>array</em> &amp;$seeds</code> - List of seed names.</li>\n</ol>"
+}

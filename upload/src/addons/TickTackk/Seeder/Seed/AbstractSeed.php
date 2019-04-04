@@ -20,76 +20,66 @@ abstract class AbstractSeed
     protected $app;
 
     /**
-     * @var string
-     */
-    protected $contentType;
-
-    /**
      * @var \Faker\Generator
      */
     protected $faker;
 
     /**
+     * @var int
+     */
+    protected $done = 0;
+
+    /**
+     * @var int
+     */
+    protected $limit = 100;
+
+    /**
      * AbstractSeed constructor.
      *
      * @param \XF\App $app
-     * @param string  $contentType
      */
-    public function __construct(\XF\App $app, string $contentType)
+    public function __construct(\XF\App $app)
     {
         $this->app = $app;
-
-        $this->setContentType($contentType);
     }
 
     /**
-     * @param string $contentType
-     */
-    protected function setContentType(string $contentType) : void
-    {
-        $this->contentType = $contentType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContentType() : string
-    {
-        return $this->contentType;
-    }
-
-    /**
-     * @param bool $plural
-     *
      * @return \XF\Phrase
      */
-    public function getContentTypePhrased(bool $plural = false) : \XF\Phrase
-    {
-        return $this->app->getContentTypePhrase($this->getContentType(), $plural);
-    }
+    abstract public function getTitle() : \XF\Phrase;
 
     /**
-     * @return \Faker\Generator
+     * @param int $done
      */
-    public function faker(): \Faker\Generator
+    public function setDone(int $done) : void
     {
-        if ($this->faker === null)
-        {
-            $this->faker = \Faker\Factory::create();
-        }
-
-        return $this->faker;
+        $this->done = $done;
     }
 
     /**
      * @return int
      */
-    abstract public function getRunOrder() : int;
+    public function getDone() : int
+    {
+        return $this->done;
+    }
+
+    /**
+     * @param int $limit
+     */
+    public function setLimit(int $limit) : void
+    {
+        $this->limit = $limit;
+    }
 
     /**
      * @return int
      */
-    abstract public function getLimit(): int;
+    public function getLimit() : int
+    {
+        return $this->limit;
+    }
 
     /**
      * @param array|null $errors
@@ -122,12 +112,14 @@ abstract class AbstractSeed
 
     /**
      * @param string $identifier
+     * @param array  $whereArr
+     * @param array $withArr
      *
      * @return null|Entity
      */
-    protected function randomEntity(string $identifier) :? Entity
+    protected function randomEntity(string $identifier, array $whereArr = [], array $withArr = []) :? Entity
     {
-        $randomEntities = $this->randomEntities($identifier, 1);
+        $randomEntities = $this->randomEntities($identifier, 1, $whereArr, $withArr);
         if ($randomEntities->count())
         {
             return $randomEntities->first();
@@ -139,16 +131,49 @@ abstract class AbstractSeed
     /**
      * @param string      $identifier
      * @param int         $limit
+     * @param array       $whereArr
+     * @param array       $withArr
      * @param string|null $orderBy
      *
      * @return ArrayCollection
      */
-    protected function randomEntities(string $identifier, int $limit, string $orderBy = null) : ArrayCollection
+    protected function randomEntities(string $identifier, int $limit, array $whereArr = [], array $withArr = [], string $orderBy = null) : ArrayCollection
     {
-        return $this->finder($identifier)
+        $finder = $this->finder($identifier)
             ->order($orderBy ?: Finder::ORDER_RANDOM)
-            ->limit($limit)
-            ->fetch();
+            ->limit($limit);
+
+        foreach ($whereArr AS $where)
+        {
+            $finder->where($where);
+        }
+
+        foreach ($withArr AS $with)
+        {
+            $mustExist = false;
+
+            if (\is_array($with) && \count($with) === 2 && is_string(reset($with)) && is_bool(end($with)))
+            {
+                $mustExist = end($with);
+                $with = reset($with);
+            }
+            $finder->with($with, $mustExist);
+        }
+
+        return $finder->fetch();
+    }
+
+    /**
+     * @return \Faker\Generator
+     */
+    public function faker(): \Faker\Generator
+    {
+        if ($this->faker === null)
+        {
+            $this->faker = \Faker\Factory::create();
+        }
+
+        return $this->faker;
     }
 
     /**
@@ -179,5 +204,13 @@ abstract class AbstractSeed
     protected function finder(string $identifier): Finder
     {
         return $this->app->finder($identifier);
+    }
+
+    /**
+     * @return \ArrayObject
+     */
+    protected function options() : \ArrayObject
+    {
+        return $this->app->options();
     }
 }

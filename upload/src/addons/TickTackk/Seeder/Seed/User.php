@@ -10,19 +10,23 @@ namespace TickTackk\Seeder\Seed;
 class User extends AbstractSeed
 {
     /**
-     * @return int
+     * User constructor.
+     *
+     * @param \XF\App $app
      */
-    public function getRunOrder(): int
+    public function __construct(\XF\App $app)
     {
-        return 5;
+        parent::__construct($app);
+
+        $this->setLimit($this->faker()->numberBetween(1000, 1500));
     }
 
-    /**'
-     * @return int
+    /**
+     * @return \XF\Phrase
      */
-    public function getLimit(): int
+    public function getTitle() : \XF\Phrase
     {
-        return $this->faker()->numberBetween(1000, 1500);
+        return $this->app->getContentTypePhrase('user', true);
     }
 
     /**

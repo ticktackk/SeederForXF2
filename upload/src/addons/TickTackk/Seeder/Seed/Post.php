@@ -10,19 +10,23 @@ namespace TickTackk\Seeder\Seed;
 class Post extends AbstractSeed
 {
     /**
-     * @return int
+     * Post constructor.
+     *
+     * @param \XF\App $app
      */
-    public function getRunOrder(): int
+    public function __construct(\XF\App $app)
     {
-        return 30;
+        parent::__construct($app);
+
+        $this->setLimit($this->finder('XF:Thread')->total() * $this->options()->discussionsPerPage);
     }
 
     /**
-     * @return int
+     * @return \XF\Phrase
      */
-    public function getLimit(): int
+    public function getTitle() : \XF\Phrase
     {
-        return $this->faker()->numberBetween(4500, 6000);
+        return $this->app->getContentTypePhrase('post', true);
     }
 
     /**

@@ -10,19 +10,23 @@ namespace TickTackk\Seeder\Seed;
 class Page extends AbstractNode
 {
     /**
-     * @return int
+     * Page constructor.
+     *
+     * @param \XF\App $app
      */
-    public function getRunOrder(): int
+    public function __construct(\XF\App $app)
     {
-        return 20;
+        parent::__construct($app);
+
+        $this->setLimit(5);
     }
 
     /**
-     * @return int
+     * @return \XF\Phrase
      */
-    public function getLimit(): int
+    public function getTitle() : \XF\Phrase
     {
-        return 5;
+        return $this->app->getContentTypePhrase('page', true);
     }
 
     /**

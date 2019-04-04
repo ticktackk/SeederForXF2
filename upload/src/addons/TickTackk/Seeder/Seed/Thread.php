@@ -12,19 +12,23 @@ use Faker\Provider\Lorem;
 class Thread extends AbstractSeed
 {
     /**
-     * @return int
+     * Thread constructor.
+     *
+     * @param \XF\App $app
      */
-    public function getRunOrder(): int
+    public function __construct(\XF\App $app)
     {
-        return 20;
+        parent::__construct($app);
+
+        $this->setLimit($this->faker()->numberBetween(5000, 10000));
     }
 
     /**
-     * @return int
+     * @return \XF\Phrase
      */
-    public function getLimit(): int
+    public function getTitle() : \XF\Phrase
     {
-        return $this->faker()->numberBetween(5000, 10000);
+        return $this->app->getContentTypePhrase('thread', true);
     }
 
     /**
@@ -32,6 +36,7 @@ class Thread extends AbstractSeed
      */
     protected function seedInternal(array &$errors = null) : void
     {
+        /** @var \XF\Entity\Forum $randomForum */
         if ($randomForum = $this->randomEntity('XF:Forum'))
         {
             $faker = $this->faker();
@@ -43,6 +48,15 @@ class Thread extends AbstractSeed
             if ($faker->boolean)
             {
                 $threadCreator->logIp($faker->boolean ? $faker->ipv6 : $faker->ipv4);
+            }
+
+            if ($faker->boolean)
+            {
+                $prefixIds = $randomForum->getPrefixes()->keys();
+                if ($prefixIds)
+                {
+                    $threadCreator->setPrefix($prefixIds[array_rand($prefixIds)]);
+                }
             }
 
             $threadCreator->setTags($faker->words($faker->numberBetween(10, 15)));

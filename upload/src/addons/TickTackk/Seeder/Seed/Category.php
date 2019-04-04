@@ -10,19 +10,23 @@ namespace TickTackk\Seeder\Seed;
 class Category extends AbstractNode
 {
     /**
-     * @return int
+     * Category constructor.
+     *
+     * @param \XF\App $app
      */
-    public function getRunOrder(): int
+    public function __construct(\XF\App $app)
     {
-        return 10;
+        parent::__construct($app);
+
+        $this->setLimit(10);
     }
 
     /**
-     * @return int
+     * @return \XF\Phrase
      */
-    public function getLimit(): int
+    public function getTitle() : \XF\Phrase
     {
-        return 20;
+        return $this->app->getContentTypePhrase('category', true);
     }
 
     /**
@@ -46,7 +50,7 @@ class Category extends AbstractNode
     /**
      * @return array
      */
-    protected function getNodeInput()
+    protected function getNodeInput() : array
     {
         $nodeInput = parent::getNodeInput();
 

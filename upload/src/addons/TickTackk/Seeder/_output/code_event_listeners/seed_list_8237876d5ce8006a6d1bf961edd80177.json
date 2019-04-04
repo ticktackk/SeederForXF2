@@ -1,0 +1,9 @@
+{
+    "event_id": "seed_list",
+    "execute_order": 10,
+    "callback_class": "TickTackk\\Seeder\\Listener",
+    "callback_method": "seedList",
+    "active": true,
+    "hint": "",
+    "description": "Add all available seeds"
+}
