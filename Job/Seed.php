@@ -87,7 +87,7 @@ class Seed extends AbstractJob
             return $this->resume();
         }
 
-        $seedHandler = $seedRepo->getSeedHandler($currentSeed);
+        $seedHandler = $seedRepo->getSeedHandler($currentSeed, false);
         if (!$seedHandler)
         {
             $this->data['current_seed'] = null;
