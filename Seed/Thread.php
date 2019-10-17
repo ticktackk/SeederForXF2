@@ -3,6 +3,8 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
+use XF\Phrase;
+use XF\Service\Thread\Creator as ThreadCreatorSvc;
 
 /**
  * Class Thread
@@ -12,21 +14,9 @@ use Faker\Provider\Lorem;
 class Thread extends AbstractSeed
 {
     /**
-     * Thread constructor.
-     *
-     * @param \XF\App $app
+     * @return Phrase
      */
-    public function __construct(\XF\App $app)
-    {
-        parent::__construct($app);
-
-        $this->setLimit($this->faker()->numberBetween(5000, 10000));
-    }
-
-    /**
-     * @return \XF\Phrase
-     */
-    public function getTitle() : \XF\Phrase
+    public function getTitle() : Phrase
     {
         return $this->app->getContentTypePhrase('thread', true);
     }
@@ -34,14 +24,14 @@ class Thread extends AbstractSeed
     /**
      * @param array|null $errors
      */
-    protected function seedInternal(array &$errors = null) : void
+    protected function _seed(array &$errors = null) : void
     {
         /** @var \XF\Entity\Forum $randomForum */
         if ($randomForum = $this->randomEntity('XF:Forum'))
         {
             $faker = $this->faker();
 
-            /** @var \XF\Service\Thread\Creator $threadCreator */
+            /** @var ThreadCreatorSvc $threadCreator */
             $threadCreator = $this->service('XF:Thread\Creator', $randomForum);
             $threadCreator->setIsAutomated();
 

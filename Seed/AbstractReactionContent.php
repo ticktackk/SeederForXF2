@@ -3,6 +3,12 @@
 namespace TickTackk\Seeder\Seed;
 
 use XF\Mvc\Entity\Entity;
+use XF\Mvc\Entity\Repository;
+use XF\Mvc\Entity\Structure as EntityStructure;
+use XF\Phrase;
+use XF\Repository\Reaction as ReactionRepo;
+use XF\Entity\Reaction as ReactionEntity;
+use XF\Entity\ReactionContent as ReactionContentEntity;
 
 /**
  * Class AbstractReactionContent
@@ -11,34 +17,6 @@ use XF\Mvc\Entity\Entity;
  */
 abstract class AbstractReactionContent extends AbstractSeed
 {
-    /**
-     * AbstractReactionContent constructor.
-     *
-     * @param \XF\App $app
-     */
-    public function __construct(\XF\App $app)
-    {
-        parent::__construct($app);
-
-        $structure = $this->getStructure();
-        $table = $structure->table;
-        $tableAlias = utf8_substr($table, 3);
-        $primaryKey = $structure->primaryKey;
-        $totalReactions = (int) $this->finder('XF:Reaction')->total();
-
-        $limit = (int) $this->app->db()->fetchOne("SELECT SUM(total)
-            FROM (
-                SELECT COUNT(*) AS total
-                FROM {$table} AS {$tableAlias}
-                LEFT JOIN xf_reaction_content AS reaction_content
-                    ON (reaction_content.content_id = {$tableAlias}.{$primaryKey} AND reaction_content.content_type = ?)
-                GROUP BY {$tableAlias}.{$primaryKey}
-                HAVING COUNT(DISTINCT reaction_content.reaction_id) < ?
-            ) AS tmp_tbl", [$structure->contentType, $totalReactions]);
-
-        $this->setLimit($limit);
-    }
-
     /**
      * @return string
      */
@@ -55,17 +33,17 @@ abstract class AbstractReactionContent extends AbstractSeed
     abstract protected function getReactionRelationName() : string;
 
     /**
-     * @return \XF\Mvc\Entity\Structure
+     * @return EntityStructure
      */
-    protected function getStructure() : \XF\Mvc\Entity\Structure
+    protected function getStructure() : EntityStructure
     {
         return $this->app->em()->getEntityStructure($this->getEntityShortName());
     }
 
     /**
-     * @return \XF\Phrase
+     * @return Phrase
      */
-    public function getTitle(): \XF\Phrase
+    public function getTitle() : Phrase
     {
         $structure = $this->getStructure();
         $contentTypePlural = $this->app->getContentTypePhrase($structure->contentType, true);
@@ -78,11 +56,11 @@ abstract class AbstractReactionContent extends AbstractSeed
     /**
      * @param Entity $content
      *
-     * @return null|Entity|\XF\Entity\Reaction
+     * @return null|Entity|ReactionEntity
      */
-    public function getReaction(Entity $content) :? \XF\Entity\Reaction
+    public function getReaction(Entity $content) :? ReactionEntity
     {
-        /** @var \XF\Entity\ReactionContent[] $reactionContents */
+        /** @var ReactionContentEntity[] $reactionContents */
         $reactionContents = $content->getRelation($this->getReactionRelationName());
         $reactionIds = [];
 
@@ -100,7 +78,6 @@ abstract class AbstractReactionContent extends AbstractSeed
     protected function getRandomContentId() : int
     {
         $visitor = \XF::visitor();
-
         $structure = $this->getStructure();
         $table = $structure->table;
         $tableAlias = utf8_substr($table, 3);
@@ -125,7 +102,7 @@ abstract class AbstractReactionContent extends AbstractSeed
     /**
      * @param array|null $errors
      */
-    protected function seedInternal(array &$errors = null): void
+    protected function _seed(array &$errors = null) : void
     {
         $visitor = \XF::visitor();
         $randomEntity = $this->app->find($this->getEntityShortName(), $this->getRandomContentId());
@@ -135,8 +112,7 @@ abstract class AbstractReactionContent extends AbstractSeed
             $reaction = $this->getReaction($randomEntity);
             if ($reaction)
             {
-                /** @var \XF\Repository\Reaction $reactionRepo */
-                $reactionRepo = $this->repository('XF:Reaction');
+                $reactionRepo = $this->getReactionRepo();
                 $reactionRepo->reactToContent($reaction->reaction_id,
                     $randomEntity->getEntityContentType(),
                     $randomEntity->getExistingEntityId(),
@@ -145,5 +121,13 @@ abstract class AbstractReactionContent extends AbstractSeed
                 );
             }
         }
+    }
+
+    /**
+     * @return Repository|ReactionRepo
+     */
+    protected function getReactionRepo() : ReactionRepo
+    {
+        return $this->app->repository('XF:Reaction');
     }
 }

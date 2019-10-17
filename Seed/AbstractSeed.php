@@ -2,10 +2,20 @@
 
 namespace TickTackk\Seeder\Seed;
 
+use ArrayObject;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Finder;
-use XF\PrintableException;
+use XF\Mvc\Entity\Repository;
+use XF\App;
+use Faker\Generator as FakerGenerator;
+use XF\Phrase;
+use Faker\Factory as FakerFactory;
+use XF\Service\AbstractService;
+use function count;
+use function is_array;
+use function is_bool;
+use function is_string;
 
 /**
  * Class AbstractSeed
@@ -15,99 +25,53 @@ use XF\PrintableException;
 abstract class AbstractSeed
 {
     /**
-     * @var \XF\App
+     * @var App
      */
     protected $app;
 
     /**
-     * @var \Faker\Generator
+     * @var FakerGenerator
      */
     protected $faker;
 
     /**
-     * @var int
-     */
-    protected $done = 0;
-
-    /**
-     * @var int
-     */
-    protected $limit = 100;
-
-    /**
      * AbstractSeed constructor.
      *
-     * @param \XF\App $app
+     * @param App $app
      */
-    public function __construct(\XF\App $app)
+    public function __construct(App $app)
     {
         $this->app = $app;
     }
 
     /**
-     * @return \XF\Phrase
+     * @return Phrase
      */
-    abstract public function getTitle() : \XF\Phrase;
-
-    /**
-     * @param int $done
-     */
-    public function setDone(int $done) : void
-    {
-        $this->done = $done;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDone() : int
-    {
-        return $this->done;
-    }
-
-    /**
-     * @param int $limit
-     */
-    public function setLimit(int $limit) : void
-    {
-        $this->limit = $limit;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLimit() : int
-    {
-        return $this->limit;
-    }
+    abstract public function getTitle() : Phrase;
 
     /**
      * @param array|null $errors
      */
-    abstract protected function seedInternal(array &$errors = null) : void;
+    abstract protected function _seed(array &$errors = null) : void;
 
     /**
-     * @return mixed
-     * @throws PrintableException
+     * @param array $errors
+     *
      * @throws \Exception
      */
-    public function run()
+    public function seed(array &$errors = null) : void
     {
-        $errors = [];
-
         /** @var \XF\Entity\User $randomUser */
         $randomUser = $this->randomEntity('XF:User');
-        $result = \XF::asVisitor($randomUser, function ()
+
+        \XF::asVisitor($randomUser, function () use($errors)
         {
-            $this->seedInternal($errors);
+            $this->_seed($errors);
         });
+    }
 
-        if (\is_array($errors) && \count($errors))
-        {
-            throw new PrintableException(implode("\n", $errors));
-        }
-
-        return $result;
+    public function postSeed() : void
+    {
     }
 
     /**
@@ -120,6 +84,7 @@ abstract class AbstractSeed
     protected function randomEntity(string $identifier, array $whereArr = [], array $withArr = []) :? Entity
     {
         $randomEntities = $this->randomEntities($identifier, 1, $whereArr, $withArr);
+
         if ($randomEntities->count())
         {
             return $randomEntities->first();
@@ -152,7 +117,7 @@ abstract class AbstractSeed
         {
             $mustExist = false;
 
-            if (\is_array($with) && \count($with) === 2 && is_string(reset($with)) && is_bool(end($with)))
+            if (is_array($with) && count($with) === 2 && is_string(reset($with)) && is_bool(end($with)))
             {
                 $mustExist = end($with);
                 $with = reset($with);
@@ -164,13 +129,13 @@ abstract class AbstractSeed
     }
 
     /**
-     * @return \Faker\Generator
+     * @return FakerGenerator
      */
-    public function faker(): \Faker\Generator
+    public function faker(): FakerGenerator
     {
         if ($this->faker === null)
         {
-            $this->faker = \Faker\Factory::create();
+            $this->faker = FakerFactory::create();
         }
 
         return $this->faker;
@@ -179,19 +144,19 @@ abstract class AbstractSeed
     /**
      * @param $class
      *
-     * @return \XF\Service\AbstractService
+     * @return AbstractService
      */
-    protected function service(string $class): \XF\Service\AbstractService
+    protected function service(string $class) : AbstractService
     {
         return call_user_func_array([$this->app, 'service'], func_get_args());
     }
 
     /**
-     * @param $identifier
+     * @param string $identifier
      *
-     * @return \XF\Mvc\Entity\Repository
+     * @return Repository
      */
-    protected function repository(string $identifier): \XF\Mvc\Entity\Repository
+    protected function repository(string $identifier): Repository
     {
         return $this->app->repository($identifier);
     }
@@ -207,10 +172,20 @@ abstract class AbstractSeed
     }
 
     /**
-     * @return \ArrayObject
+     * @return ArrayObject
      */
-    protected function options() : \ArrayObject
+    protected function options() : ArrayObject
     {
         return $this->app->options();
+    }
+
+    /**
+     * @param string|null $key
+     *
+     * @return mixed
+     */
+    protected function config(string $key = null)
+    {
+        return $this->app->config($key);
     }
 }

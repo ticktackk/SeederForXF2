@@ -2,6 +2,8 @@
 
 namespace TickTackk\Seeder;
 
+use XF\Cli\App;
+
 /**
  * Class Listener
  *
@@ -10,10 +12,10 @@ namespace TickTackk\Seeder;
 class Listener
 {
     /**
-     * @param \XF\Cli\App $app
-     * @param array       $seeds
+     * @param App   $app
+     * @param array $seeds
      */
-    public static function seedList(\XF\App $app, array &$seeds) : void
+    public static function seedList(/** @noinspection PhpUnusedParameterInspection */App $app, array &$seeds) : void
     {
         foreach (['User', 'Category', 'Forum', 'Page', 'Thread', 'Post', 'PostReactionContent'] AS $className)
         {

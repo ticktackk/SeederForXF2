@@ -2,6 +2,10 @@
 
 namespace TickTackk\Seeder\Seed;
 
+use XF\Phrase;
+use XF\Service\Conversation\Replier as ConversationReplier;
+use XF\Entity\ConversationRecipient as ConversationRecipientEntity;
+
 /**
  * Class ConversationMessage
  *
@@ -10,23 +14,9 @@ namespace TickTackk\Seeder\Seed;
 class ConversationMessage extends AbstractSeed
 {
     /**
-     * ConversationMessage constructor.
-     *
-     * @param \XF\App $app
+     * @return Phrase
      */
-    public function __construct(\XF\App $app)
-    {
-        parent::__construct($app);
-
-        $this->setLimit(
-            $this->finder('XF:ConversationMaster')->total() * $this->options()->messagesPerPage
-        );
-    }
-
-    /**
-     * @return \XF\Phrase
-     */
-    public function getTitle(): \XF\Phrase
+    public function getTitle() : Phrase
     {
         return \XF::phrase('conversation_messages');
     }
@@ -34,19 +24,19 @@ class ConversationMessage extends AbstractSeed
     /**
      * @param array|null $errors
      */
-    protected function seedInternal(array &$errors = null): void
+    protected function _seed(array &$errors = null) : void
     {
         $visitor = \XF::visitor();
         $faker = $this->faker();
 
-        /** @var \XF\Entity\ConversationRecipient $conversationRecipient */
+        /** @var ConversationRecipientEntity $conversationRecipient */
         if ($conversationRecipient = $this->randomEntity('XF:ConversationRecipient', [
             ['user_id', $visitor->user_id]
         ], [
             ['Conversation', true]
         ]))
         {
-            /** @var \XF\Service\Conversation\Replier $replier */
+            /** @var ConversationReplier $replier */
             $replier = $this->service('XF:Conversation\Replier', $conversationRecipient->Conversation, $visitor);
             $replier->setIsAutomated();
             if ($faker->boolean)

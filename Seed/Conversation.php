@@ -3,6 +3,8 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
+use XF\Phrase;
+use XF\Service\Conversation\Creator as ConversationCreatorSvc;
 
 /**
  * Class Conversation
@@ -12,21 +14,9 @@ use Faker\Provider\Lorem;
 class Conversation extends AbstractSeed
 {
     /**
-     * Conversation constructor.
-     *
-     * @param \XF\App $app
+     * @return Phrase
      */
-    public function __construct(\XF\App $app)
-    {
-        parent::__construct($app);
-
-        $this->setLimit($this->faker()->numberBetween(4000, 15000));
-    }
-
-    /**
-     * @return \XF\Phrase
-     */
-    public function getTitle(): \XF\Phrase
+    public function getTitle() : Phrase
     {
         return \XF::phrase('conversations');
     }
@@ -34,7 +24,7 @@ class Conversation extends AbstractSeed
     /**
      * @param array|null $errors
      */
-    protected function seedInternal(array &$errors = null): void
+    protected function _seed(array &$errors = null) : void
     {
         $visitor = \XF::visitor();
         $faker = $this->faker();
@@ -43,7 +33,7 @@ class Conversation extends AbstractSeed
             ['user_id', '<>', $visitor->user_id]
         ]))
         {
-            /** @var \XF\Service\Conversation\Creator $creator */
+            /** @var ConversationCreatorSvc $creator */
             $creator = $this->service('XF:Conversation\Creator', $visitor);
             $creator->setIsAutomated();
             $creator->setContent(Lorem::sentence(), $faker->text);

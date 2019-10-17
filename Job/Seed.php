@@ -3,6 +3,10 @@
 namespace TickTackk\Seeder\Job;
 
 use XF\Job\AbstractJob;
+use XF\Mvc\Entity\Repository;
+use TickTackk\Seeder\Repository\Seed as SeedRepo;
+use XF\Job\JobResult;
+use function is_array;
 
 /**
  * Class Seed
@@ -15,149 +19,131 @@ class Seed extends AbstractJob
      * @var array
      */
     protected $defaultData = [
+        'current_seed' => null,
         'seeds' => [],
-        'currentSeed' => null,
-        'seedStats' => []
+        'done' => 0,
+        'limit' => 100,
+        'bulk_limits' => null
     ];
+
+    /**
+     * @var string
+     */
+    protected $currentSeedTitle;
 
     /**
      * @param int $maxRunTime
      *
-     * @return \XF\Job\JobResult
-     * @throws \XF\PrintableException
+     * @return JobResult
      * @throws \Exception
      */
-    public function run($maxRunTime): \XF\Job\JobResult
+    public function run($maxRunTime): JobResult
     {
         $startTime = microtime(true);
+        $seedRepo = $this->getSeedRepo();
 
-        if ($this->data['currentSeed'] === null)
+        if (!is_array($this->data['seeds']))
         {
-            $this->data['currentSeed'] = reset($this->data['seeds']);
+            $this->data['seeds'] = $this->data['current_seed'] ? [$this->data['type']] : $seedRepo->getAvailableSeeds();
+            $this->data['current_seed'] = null;
+            if (is_array($this->data['bulk_limits']))
+            {
+                $this->data['limit'] = null;
+            }
         }
 
-        $currentSeedClass = $this->getCurrentSeedClass();
-        if (isset($this->data['seedStats'][$currentSeedClass]) && $this->getDoneForCurrentSeed() >= $this->getLimitForCurrentSeed())
+        if (!$this->data['current_seed'])
         {
-            $currentSeedClass = $this->getNextSeed();
-            if ($currentSeedClass === null)
+            $this->data['current_seed'] = array_shift($this->data['seeds']);
+            if (!$this->data['current_seed'])
             {
                 return $this->complete();
             }
 
-            $this->data['currentSeed'] = $currentSeedClass;
+            if (is_array($this->data['bulk_limits']))
+            {
+                $this->data['limit'] = $this->data['bulk_limits'][$this->data['current_seed']] ?? null;
+            }
+
+            if (!$this->data['limit'])
+            {
+                $this->data['current_seed'] = null;
+                return $this->resume();
+            }
+            $this->data['done'] = 0;
         }
 
-        $currentSeed = $this->getCurrentSeed();
-        if (!isset($this->data['seedStats'][$currentSeedClass]))
+        $currentSeed = $this->data['current_seed'];
+        $limit = $this->data['limit'];
+
+        if (!$seedRepo->isValidSeed($currentSeed))
         {
-            $this->data['seedStats'][$currentSeedClass] = [
-                'done' => 0,
-                'limit' => $currentSeed->getLimit()
-            ];
+            $this->data['current_seed'] = null;
+
+            if (is_array($this->data['bulk_limits']))
+            {
+                $this->data['limit'] = null;
+            }
+            return $this->resume();
         }
+
+        $seedHandler = $seedRepo->getSeedHandler($currentSeed);
+        if (!$seedHandler)
+        {
+            $this->data['current_seed'] = null;
+
+            if (is_array($this->data['bulk_limits']))
+            {
+                $this->data['limit'] = null;
+            }
+            return $this->resume();
+        }
+
+        $this->currentSeedTitle = $seedHandler->getTitle();
+
+        /**
+         * @return bool
+         */
+        $hasMore = function () use($limit)
+        {
+            return $this->data['done'] < $limit;
+        };
 
         do
         {
-            $currentSeed->run();
-            $this->bumpDoneForCurrentSeed();
+            $seedHandler->seed($errors);
 
-            $hasSeededAll = $this->getDoneForCurrentSeed() >= $this->getLimitForCurrentSeed();
+            if ($errors)
+            {
+                foreach ($errors AS $error)
+                {
+                    \XF::logException($error);
+                }
+            }
+            else
+            {
+                $this->data['done']++;
+            }
+
+            $this->saveIncrementalData();
+
+            // we need to throw away the previous entity cache to prevent potential memory issues
+            $this->app->em()->clearEntityCache();
+
+            if (!$hasMore())
+            {
+                $seedHandler->postSeed();
+
+                $this->data['current_seed'] = null;
+                return $this->resume();
+            }
+
             $timeRemaining = $maxRunTime - (microtime(true) - $startTime);
+            $errors = [];
         }
-        while (!$hasSeededAll && $timeRemaining >= 1);
+        while ($hasMore() && $timeRemaining >= 0.5);
 
         return $this->resume();
-    }
-
-    protected function bumpDoneForCurrentSeed(): void
-    {
-        $this->data['seedStats'][$this->getCurrentSeedClass()]['done']++;
-    }
-
-    /**
-     * @param string $seedName
-     *
-     * @return \TickTackk\Seeder\Seed\AbstractSeed
-     * @throws \Exception
-     */
-    public function getSeed(string $seedName) : \TickTackk\Seeder\Seed\AbstractSeed
-    {
-        /** @var \TickTackk\Seeder\Repository\Seed $seedRepo */
-        $seedRepo = $this->app->repository('TickTackk\Seeder:Seed');
-        return $seedRepo->getSeedHandler($seedName);
-    }
-
-    /**
-     * @return \TickTackk\Seeder\Seed\AbstractSeed
-     * @throws \Exception
-     */
-    public function getCurrentSeed() : \TickTackk\Seeder\Seed\AbstractSeed
-    {
-        return $this->getSeed($this->getCurrentSeedClass());
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCurrentSeedClass(): string
-    {
-        return $this->data['currentSeed'] ?? '';
-    }
-
-    /**
-     * @return string
-     * @throws \Exception
-     */
-    protected function getTitleForCurrentSeed() : string
-    {
-        $currentSeed = $this->getCurrentSeed();
-
-        $title = $currentSeed->getTitle();
-        if ($title instanceof \XF\Phrase)
-        {
-            $title = $title->render('raw');
-        }
-
-        return $title;
-    }
-
-    /**
-     * @return int
-     * @throws \Exception
-     */
-    protected function getDoneForCurrentSeed(): int
-    {
-        $done = $this->data['seedStats'][$this->getCurrentSeedClass()]['done'] ?? 0;
-
-        $currentSeed = $this->getCurrentSeed();
-        $currentSeed->setDone($done);
-
-        return $currentSeed->getDone();
-    }
-
-    /**
-     * @return int
-     * @throws \Exception
-     */
-    public function getLimitForCurrentSeed(): int
-    {
-        $limit = $this->data['seedStats'][$this->getCurrentSeedClass()]['limit'] ?? 0;
-
-        $currentSeed = $this->getCurrentSeed();
-        $currentSeed->setLimit($limit);
-
-        return $currentSeed->getLimit();
-    }
-
-    /**
-     * @return null|string
-     */
-    protected function getNextSeed(): ?string
-    {
-        $seedNameIndexes = array_values($this->data['seeds']);
-        $position = array_search($this->data['currentSeed'], $seedNameIndexes, true);
-        return !empty($seedNameIndexes[$position + 1]) ? $seedNameIndexes[$position + 1] : null;
     }
 
     /**
@@ -166,12 +152,13 @@ class Seed extends AbstractJob
      */
     public function getStatusMessage(): string
     {
-        return sprintf(
-            '%s %s (%d/%d)...',
-            'Seeding...',
-            $this->getTitleForCurrentSeed(),
-            $this->getDoneForCurrentSeed(),
-            $this->getLimitForCurrentSeed()
+        $actionPhrase = \XF::phrase('tckSeeder_seeding');
+
+        return sprintf('%s... %s (%s/%s)',
+            $actionPhrase,
+            $this->currentSeedTitle,
+            $this->app->language()->numberFormat($this->data['done']),
+            $this->app->language()->numberFormat($this->data['limit'])
         );
     }
 
@@ -189,5 +176,13 @@ class Seed extends AbstractJob
     public function canCancel(): bool
     {
         return true;
+    }
+
+    /**
+     * @return Repository|SeedRepo
+     */
+    protected function getSeedRepo() : SeedRepo
+    {
+        return $this->app->repository('TickTackk\Seeder:Seed');
     }
 }

@@ -2,6 +2,9 @@
 
 namespace TickTackk\Seeder\Seed;
 
+use XF\Phrase;
+use XF\Service\User\Registration as UserRegistrationSvc;
+
 /**
  * Class User
  *
@@ -10,21 +13,9 @@ namespace TickTackk\Seeder\Seed;
 class User extends AbstractSeed
 {
     /**
-     * User constructor.
-     *
-     * @param \XF\App $app
+     * @return Phrase
      */
-    public function __construct(\XF\App $app)
-    {
-        parent::__construct($app);
-
-        $this->setLimit($this->faker()->numberBetween(1000, 1500));
-    }
-
-    /**
-     * @return \XF\Phrase
-     */
-    public function getTitle() : \XF\Phrase
+    public function getTitle() : Phrase
     {
         return $this->app->getContentTypePhrase('user', true);
     }
@@ -32,11 +23,11 @@ class User extends AbstractSeed
     /**
      * @param array|null $errors
      */
-    protected function seedInternal(array &$errors = null) : void
+    protected function _seed(array &$errors = null) : void
     {
         $faker = $this->faker();
 
-        /** @var \XF\Service\User\Registration $registrationService */
+        /** @var UserRegistrationSvc $registrationService */
         $registrationService = $this->service('XF:User\Registration');
         $registrationService->setMapped([
             'username' => $faker->boolean ? $faker->userName : $faker->firstName . '_' . $faker->lastName,

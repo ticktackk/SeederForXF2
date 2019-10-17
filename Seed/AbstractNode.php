@@ -3,6 +3,7 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
+use XF\Entity\Node as NodeEntity;
 
 /**
  * Class AbstractNode
@@ -46,9 +47,9 @@ abstract class AbstractNode extends AbstractSeed
     /**
      * @param array|null $errors
      */
-    protected function seedInternal(array &$errors = null): void
+    protected function _seed(array &$errors = null) : void
     {
-        /** @var \XF\Entity\Node $node */
+        /** @var NodeEntity $node */
         $node = $this->app->em()->create('XF:Node');
         $node->node_type_id = $this->getNodeTypeId();
 
@@ -60,10 +61,16 @@ abstract class AbstractNode extends AbstractSeed
 
         try
         {
-            $form->run(false);
+            $form->run();
         }
         catch (\XF\PrintableException $printableException)
         {
+            \XF::logException($printableException);
         }
+    }
+
+    public function postSeed(): void
+    {
+        $this->app->jobManager()->runUnique('permissionRebuild', $this->config('jobMaxRunTime'));
     }
 }

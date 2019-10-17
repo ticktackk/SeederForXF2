@@ -2,6 +2,8 @@
 
 namespace TickTackk\Seeder\Seed;
 
+use XF\Phrase;
+
 /**
  * Class Category
  *
@@ -10,21 +12,9 @@ namespace TickTackk\Seeder\Seed;
 class Category extends AbstractNode
 {
     /**
-     * Category constructor.
-     *
-     * @param \XF\App $app
+     * @return Phrase
      */
-    public function __construct(\XF\App $app)
-    {
-        parent::__construct($app);
-
-        $this->setLimit(10);
-    }
-
-    /**
-     * @return \XF\Phrase
-     */
-    public function getTitle() : \XF\Phrase
+    public function getTitle() : Phrase
     {
         return $this->app->getContentTypePhrase('category', true);
     }
