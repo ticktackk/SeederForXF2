@@ -42,7 +42,7 @@ class Seed extends Command
     {
         \XF::db()->logQueries(false);
 
-        $seed = $input->getArgument('seed');
+        $seed = str_replace('/', '\\', $input->getArgument('seed'));
         $seedRepo = $this->getSeedRepo();
         if (!$seedRepo->isValidSeed($seed))
         {

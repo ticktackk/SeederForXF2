@@ -50,7 +50,10 @@ class BulkSeed extends Command
         $limits = [];
         if ($seeds)
         {
-            $seeds = explode(',', $seeds);
+            $seeds = array_map(function ($seed)
+            {
+                return str_replace('/', '\\', $seed);
+            }, explode(',', $seeds));
 
             foreach ($seeds AS $seed)
             {
