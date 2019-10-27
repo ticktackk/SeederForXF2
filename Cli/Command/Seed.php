@@ -5,6 +5,7 @@ namespace TickTackk\Seeder\Cli\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use XF\Cli\Command\JobRunnerTrait;
 use XF\Mvc\Entity\Repository;
@@ -28,6 +29,13 @@ class Seed extends Command
                 'seed',
                 InputArgument::REQUIRED,
                 'Short class of the seed..'
+            )
+            ->addOption(
+                'limit',
+                'l',
+                InputOption::VALUE_OPTIONAL,
+                'Limit how much data must be seeded.',
+                500
             );
     }
 
@@ -50,8 +58,10 @@ class Seed extends Command
             return 1;
         }
 
+        $limit = (int) $input->getOption('limit');
         $this->setupAndRunJob('tckSeeder-seed-' .  $seed, 'TickTackk\Seeder:Seed', [
-            'seeds' => [$seed]
+            'seeds' => [$seed],
+            'limit' => $limit
         ], $output);
 
         \XF::db()->logQueries(true);
