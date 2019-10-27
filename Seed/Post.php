@@ -2,8 +2,11 @@
 
 namespace TickTackk\Seeder\Seed;
 
+use XF\Mvc\Entity\Repository;
 use XF\Phrase;
+use XF\Repository\ThreadWatch as ThreadWatchRepo;
 use XF\Service\Thread\Replier as ThreadReplierSvc;
+use XF\Entity\Thread as ThreadEntity;
 
 /**
  * Class Post
@@ -25,7 +28,9 @@ class Post extends AbstractSeed
      */
     protected function _seed(array &$errors = null) : void
     {
-        if ($randomThread = $this->randomEntity('XF:Thread'))
+        /** @var ThreadEntity $randomThread */
+        $randomThread = $this->randomEntity('XF:Thread');
+        if ($randomThread)
         {
             $faker = $this->faker();
 
@@ -40,7 +45,33 @@ class Post extends AbstractSeed
             if ($threadReplier->validate($errors))
             {
                 $threadReplier->save();
+                $threadReplier->sendNotifications();
+
+                if ($this->faker()->boolean)
+                {
+                    $threadWatchRepo = $this->getThreadWatchRepo();
+                    $visitor = \XF::visitor();
+
+                    if ($this->faker()->boolean)
+                    {
+                        $watchState = $this->faker()->boolean ? 'watch_no_email' : 'watch_email';
+                        $threadWatchRepo->setWatchState($randomThread, $visitor, $watchState);
+                    }
+                    else
+                    {
+                        // use user preferences
+                        $threadWatchRepo->autoWatchThread($randomThread, $visitor, false);
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * @return Repository|ThreadWatchRepo
+     */
+    protected function getThreadWatchRepo() : ThreadWatchRepo
+    {
+        return $this->repository('XF:ThreadWatch');
     }
 }

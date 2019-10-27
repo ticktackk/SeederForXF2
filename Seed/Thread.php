@@ -3,8 +3,11 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
+use XF\Mvc\Entity\Repository;
 use XF\Phrase;
+use XF\Repository\ThreadWatch as ThreadWatchRepo;
 use XF\Service\Thread\Creator as ThreadCreatorSvc;
+use XF\Repository\Thread as ThreadRepo;
 
 /**
  * Class Thread
@@ -54,7 +57,44 @@ class Thread extends AbstractSeed
             if ($threadCreator->validate($errors))
             {
                 $threadCreator->save();
+                $threadWatchRepo = $this->getThreadWatchRepo();
+                $threadRepo = $this->getThreadRepo();
+
+                $thread = $threadCreator->getThread();
+                $visitor = \XF::visitor();
+
+                if ($this->faker()->boolean)
+                {
+                    if ($this->faker()->boolean)
+                    {
+                        $watchState = $this->faker()->boolean ? 'watch_email' : 'watch_no_email';
+                        $threadWatchRepo->setWatchState($thread, $visitor, $watchState);
+                    }
+                }
+                else
+                {
+                    // use user preferences
+                    $threadWatchRepo->autoWatchThread($thread, $visitor, true);
+                }
+
+                $threadRepo->markThreadReadByVisitor($thread, $thread->post_date);
             }
         }
+    }
+
+    /**
+     * @return Repository|ThreadWatchRepo
+     */
+    protected function getThreadWatchRepo() : ThreadWatchRepo
+    {
+        return $this->repository('XF:ThreadWatch');
+    }
+
+    /**
+     * @return Repository|ThreadRepo
+     */
+    protected function getThreadRepo() : ThreadRepo
+    {
+        return $this->repository('XF:Thread');
     }
 }
