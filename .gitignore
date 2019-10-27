@@ -6,4 +6,3 @@ hashes.json
 .DS_Store
 .phpstorm.meta.php
 _metadata.json
-composer.lock
