@@ -6,8 +6,9 @@ use ArrayObject;
 use XF\Mvc\Entity\ArrayCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Finder;
+use XF\Mvc\Entity\Manager as EntityManager;
 use XF\Mvc\Entity\Repository;
-use XF\App;
+use XF\App as BaseApp;
 use Faker\Generator as FakerGenerator;
 use XF\Phrase;
 use Faker\Factory as FakerFactory;
@@ -25,7 +26,7 @@ use function is_string;
 abstract class AbstractSeed
 {
     /**
-     * @var App
+     * @var BaseApp
      */
     protected $app;
 
@@ -37,9 +38,9 @@ abstract class AbstractSeed
     /**
      * AbstractSeed constructor.
      *
-     * @param App $app
+     * @param BaseApp $app
      */
-    public function __construct(App $app)
+    public function __construct(BaseApp $app)
     {
         $this->app = $app;
     }
@@ -148,7 +149,7 @@ abstract class AbstractSeed
      */
     protected function service(string $class) : AbstractService
     {
-        return call_user_func_array([$this->app, 'service'], func_get_args());
+        return call_user_func_array([$this->app(), 'service'], func_get_args());
     }
 
     /**
@@ -158,7 +159,7 @@ abstract class AbstractSeed
      */
     protected function repository(string $identifier): Repository
     {
-        return $this->app->repository($identifier);
+        return $this->app()->repository($identifier);
     }
 
     /**
@@ -168,7 +169,7 @@ abstract class AbstractSeed
      */
     protected function finder(string $identifier): Finder
     {
-        return $this->app->finder($identifier);
+        return $this->app()->finder($identifier);
     }
 
     /**
@@ -176,7 +177,7 @@ abstract class AbstractSeed
      */
     protected function options() : ArrayObject
     {
-        return $this->app->options();
+        return $this->app()->options();
     }
 
     /**
@@ -186,6 +187,22 @@ abstract class AbstractSeed
      */
     protected function config(string $key = null)
     {
-        return $this->app->config($key);
+        return $this->app()->config($key);
+    }
+
+    /**
+     * @return EntityManager
+     */
+    protected function em() : EntityManager
+    {
+        return $this->app()->em();
+    }
+
+    /**
+     * @return BaseApp
+     */
+    protected function app() : BaseApp
+    {
+        return $this->app;
     }
 }
