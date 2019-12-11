@@ -70,6 +70,8 @@ abstract class AbstractSeed
             \XF::$time = \time();
 
             $this->_seed($errors);
+
+            $this->em()->clearEntityCache();
         });
     }
 
