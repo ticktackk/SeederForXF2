@@ -67,6 +67,8 @@ abstract class AbstractSeed
 
         \XF::asVisitor($randomUser, function () use($errors)
         {
+            \XF::$time = \time();
+
             $this->_seed($errors);
         });
     }
