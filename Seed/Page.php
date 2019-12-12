@@ -28,6 +28,18 @@ class Page extends AbstractNode
     }
 
     /**
+     * @return array
+     */
+    protected function getNodeInput() : array
+    {
+        $nodeInput = parent::getNodeInput();
+
+        $nodeInput['node_name'] = $this->faker()->slug();
+
+        return $nodeInput;
+    }
+
+    /**
      * @return null|\XF\Entity\AbstractNode
      */
     protected function getRandomParentNode(): ?\XF\Entity\AbstractNode
