@@ -50,7 +50,11 @@ class Seed extends Command
     {
         \XF::db()->logQueries(false);
 
-        $seed = str_replace('/', '\\', $input->getArgument('seed'));
+        $seed = \trim(\str_replace(
+            ['//', '/', '_', '\\\\'],
+            ['/', '\\', '\\', '\\'],
+            $input->getArgument('seed'))
+        );
         $seedRepo = $this->getSeedRepo();
         if (!$seedRepo->isValidSeed($seed))
         {
