@@ -1,7 +1,7 @@
 CHANGELOG
 ==========================
 
-## Changelog for v1.0.1
+## 1.0.1 (`1000170`)
 
 * **New**: Set current time in XF after every seed data being inserted
 * **New**: Clear entity cache after every seed
@@ -14,19 +14,19 @@ CHANGELOG
 
 **Note:** You can now remove both `composer.json` and `composer.lock` after installing the add-on from release build.
 
-## Changelog for v1.0.0
+## 1.0.0 (`1000070`)
 
 * **Changed**: Rewritten the job
 * **Changed**: Separated tck-seeder:seed command into two CLI commands
 * **Fixed**: Do not throw exception if seed handler does not exist
 
-## Changelog for v1.0.0 Alpha 3
+## 1.0.0 Alpha 3 (`1000013`)
 
 * **New**: Added new class `AbstractReactionContent` to allow reacting to random contents
 * **Changed**: Now makes use of code even listener instead of content type
 * **Changed**: Changed the option from `content-type` to `seed` for the CLI command
 
-## Changelog for v1.0.0 Alpha 2
+## 1.0.0 Alpha 2 (`1000012`)
 
 * **New**: Set tags when creating threads
 * **New**: Users will now have an avatar
@@ -37,6 +37,6 @@ CHANGELOG
 * **Fixed**: Limit being set to between 1K and 5K instead of 5K and 10K for Thread seed
 * **Fixed**: Argument 1 passed must be of the type array or null, string is given when running seeder for a specific content type
 
-## Changelog for v1.0.0 Alpha 1
+## 1.0.0 Alpha 1 (`1000011`)
 
 First alpha release.
