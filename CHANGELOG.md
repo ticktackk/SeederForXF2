@@ -1,6 +1,10 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Alpha 1 (`1010011`)
+
+- **Change:** Set minimum Faker version to 1.9 (#3)
+
 ## 1.0.1 (`1000170`)
 
 * **New**: Set current time in XF after every seed data being inserted
