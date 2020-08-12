@@ -3,7 +3,6 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
-use XF\Entity\AbstractNode as AbstractNodeEntity;
 
 class MediaGalleryCategory extends AbstractCategoryTree
 {
