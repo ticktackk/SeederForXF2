@@ -47,6 +47,29 @@ class MediaGalleryCategory extends AbstractCategoryTree
         }
         while ($categoryInput['category_type'] === null);
 
+        $categoryInput['allowed_types'] = [];
+        $setupAllowedTypes = function () use($faker, $categoryInput)
+        {
+            foreach (['image', 'video', 'audio', 'embed'] AS $allowedType)
+            {
+                if ($faker->boolean)
+                {
+                    $categoryInput['allowed_types'][] = $allowedType;
+                }
+            }
+        };
+
+        $setupAllowedTypes();
+
+        if (\in_array($categoryInput['category_type'], ['album', 'media'], true) && !\count($categoryInput['allowed_types']))
+        {
+            do
+            {
+                $setupAllowedTypes();
+            }
+            while (\count($categoryInput['allowed_types']) === 0);
+        }
+
         return $categoryInput;
     }
 }
