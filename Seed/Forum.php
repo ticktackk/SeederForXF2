@@ -12,14 +12,6 @@ use XF\Phrase;
 class Forum extends AbstractNode
 {
     /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('forum', true);
-    }
-
-    /**
      * @return string
      */
     protected function getNodeTypeId(): string

@@ -15,7 +15,7 @@ use XF\Entity\ReactionContent as ReactionContentEntity;
  *
  * @package TickTackk\Seeder\Seed
  */
-abstract class AbstractReactionContent extends AbstractSeed
+abstract class AbstractContentReaction extends AbstractSeed
 {
     /**
      * @return string
@@ -99,28 +99,29 @@ abstract class AbstractReactionContent extends AbstractSeed
         ", [$structure->contentType, $visitor->user_id, $totalReactions]);
     }
 
-    /**
-     * @param array|null $errors
-     */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []): bool
     {
-        $visitor = \XF::visitor();
         $randomEntity = $this->app->find($this->getEntityShortName(), $this->getRandomContentId());
-
-        if ($randomEntity)
+        if (!$randomEntity)
         {
-            $reaction = $this->getReaction($randomEntity);
-            if ($reaction)
-            {
-                $reactionRepo = $this->getReactionRepo();
-                $reactionRepo->reactToContent($reaction->reaction_id,
-                    $randomEntity->getEntityContentType(),
-                    $randomEntity->getExistingEntityId(),
-                    $visitor,
-                    $this->faker()->boolean
-                );
-            }
+            return false;
         }
+
+        $reaction = $this->getReaction($randomEntity);
+        if (!$reaction)
+        {
+            return false;
+        }
+
+        $reactionRepo = $this->getReactionRepo();
+        $reactionContent = $reactionRepo->reactToContent($reaction->reaction_id,
+            $randomEntity->getEntityContentType(),
+            $randomEntity->getExistingEntityId(),
+            \XF::visitor(),
+            $this->faker()->boolean
+        );
+
+        return $reactionContent ? true : false;
     }
 
     /**

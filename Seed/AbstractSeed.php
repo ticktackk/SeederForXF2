@@ -43,40 +43,35 @@ abstract class AbstractSeed
     public function __construct(BaseApp $app)
     {
         $this->app = $app;
+
+        \XF::$time = \time();
     }
 
-    /**
-     * @return Phrase
-     */
-    abstract public function getTitle() : Phrase;
+    abstract protected function seed(array $params = []) : bool;
 
     /**
-     * @param array|null $errors
-     */
-    abstract protected function _seed(array &$errors = null) : void;
-
-    /**
-     * @param array $errors
+     * @param array|null $params
+     *
+     * @return bool
      *
      * @throws \Exception
      */
-    public function seed(array &$errors = null) : void
+    public function insert(?array $params = []) : bool
     {
         /** @var \XF\Entity\User $randomUser */
         $randomUser = $this->randomEntity('XF:User');
 
-        \XF::asVisitor($randomUser, function () use($errors)
+        try
         {
-            \XF::$time = \time();
-
-            $this->_seed($errors);
-
+            return \XF::asVisitor($randomUser, function () use($params)
+            {
+                return $this->seed($params);
+            });
+        }
+        finally
+        {
             $this->em()->clearEntityCache();
-        });
-    }
-
-    public function postSeed() : void
-    {
+        }
     }
 
     /**

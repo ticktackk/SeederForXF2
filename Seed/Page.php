@@ -12,14 +12,6 @@ use XF\Phrase;
 class Page extends AbstractNode
 {
     /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('page', true);
-    }
-
-    /**
      * @return string
      */
     protected function getNodeTypeId(): string

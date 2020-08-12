@@ -45,9 +45,13 @@ abstract class AbstractNode extends AbstractSeed
     }
 
     /**
-     * @param array|null $errors
+     * @param array $params
+     *
+     * @return bool
+     *
+     * @throws \XF\PrintableException
      */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []) : bool
     {
         /** @var NodeEntity $node */
         $node = $this->app->em()->create('XF:Node');
@@ -59,14 +63,12 @@ abstract class AbstractNode extends AbstractSeed
         $node->addCascadedSave($data);
         $form->basicEntitySave($node, $this->getNodeInput());
 
-        try
+        if (!$form->run(false))
         {
-            $form->run();
+            return false;
         }
-        catch (\XF\PrintableException $printableException)
-        {
-            \XF::logException($printableException);
-        }
+
+        return true;
     }
 
     public function postSeed(): void

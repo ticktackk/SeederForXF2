@@ -13,41 +13,41 @@ use XF\Entity\ConversationRecipient as ConversationRecipientEntity;
  */
 class ConversationMessage extends AbstractSeed
 {
-    /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return \XF::phrase('conversation_messages');
-    }
-
-    /**
-     * @param array|null $errors
-     */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []): bool
     {
         $visitor = \XF::visitor();
         $faker = $this->faker();
 
         /** @var ConversationRecipientEntity $conversationRecipient */
-        if ($conversationRecipient = $this->randomEntity('XF:ConversationRecipient', [
+        $conversationRecipient = $conversationRecipient = $this->randomEntity('XF:ConversationRecipient', [
             ['user_id', $visitor->user_id]
         ], [
             ['Conversation', true]
-        ]))
+        ]);
+
+        if (!$conversationRecipient)
         {
-            /** @var ConversationReplier $replier */
-            $replier = $this->service('XF:Conversation\Replier', $conversationRecipient->Conversation, $visitor);
-            $replier->setIsAutomated();
-            if ($faker->boolean)
-            {
-                $replier->setLogIp($faker->boolean ? $faker->ipv6 : $faker->ipv4);
-            }
-            $replier->setMessageContent($faker->text);
-            if ($replier->validate($errors))
-            {
-                $replier->save();
-            }
+            return false;
         }
+
+        /** @var ConversationReplier $replier */
+        $replier = $this->service('XF:Conversation\Replier', $conversationRecipient->Conversation, $visitor);
+        $replier->setIsAutomated();
+        if ($faker->boolean)
+        {
+            $replier->setLogIp($faker->boolean ? $faker->ipv6 : $faker->ipv4);
+        }
+        $replier->setMessageContent($faker->text);
+        if (!$replier->validate())
+        {
+            return false;
+        }
+
+        if (!$replier->save())
+        {
+            return false;
+        }
+
+        return true;
     }
 }

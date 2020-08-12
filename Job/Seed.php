@@ -2,187 +2,230 @@
 
 namespace TickTackk\Seeder\Job;
 
-use XF\Job\AbstractJob;
-use XF\Mvc\Entity\Repository;
-use TickTackk\Seeder\Repository\Seed as SeedRepo;
+use TickTackk\Seeder\Job\Exception\InvalidContentTypePluralProvidedException;
+use TickTackk\Seeder\Job\Exception\InvalidSeedClassProvidedException;
+use TickTackk\Seeder\Seed\AbstractSeed;
+use XF\App as BaseApp;
 use XF\Job\JobResult;
-use function is_array;
+use XF\Job\Manager as JobManager;
+use XF\Mvc\Entity\Repository;
+use XF\Mvc\Entity\Finder;
+use XF\Db\AbstractAdapter as DbAdapter;
+use XF\Job\AbstractJob;
+use XF\Phrase;
+use XF\Service\AbstractService;
+use XF\Mvc\Entity\Manager as EntityManager;
 
-/**
- * Class Seed
- *
- * @package TickTackk\Seeder\Job
- */
 class Seed extends AbstractJob
 {
-    /**
-     * @var array
-     */
     protected $defaultData = [
-        'current_seed' => null,
-        'seeds' => [],
-        'done' => 0,
-        'limit' => 100,
-        'bulk_limits' => null
+        'steps' => null,
+        'done' => null,
+        'batch' => null,
+        'limit' => null,
+        'seed_class' => null,
+        'seed_params' => null,
+        'content_type_plural' => null
     ];
 
-    /**
-     * @var string
-     */
-    protected $currentSeedTitle;
+    protected function getFromData(string $key, $fallback = null)
+    {
+        return $this->getData()[$key] ?? $fallback;
+    }
+
+    protected function getSeedClass() :? string
+    {
+        return $this->getFromData('seed_class');
+    }
+
+    protected function getSeedParams() :? array
+    {
+        return $this->getFromData('seed_params');
+    }
+
+    protected function getStepCount() :? int
+    {
+        return $this->getFromData('step');
+    }
+
+    protected function getDoneCount() :? int
+    {
+        return $this->getFromData('done');
+    }
+
+    protected function getLimit() :? int
+    {
+        return $this->getFromData('limit');
+    }
+
+    protected function getContentTypePlural() :? string
+    {
+        return $this->getFromData('content_type_plural');
+    }
+
+    protected function setupData(array $data) : array
+    {
+        $placeholders = [
+            'steps' => 0,
+            'done' => 0,
+            'batch' => 100,
+            'limit' => 500,
+            'seed_params' => []
+        ];
+
+        foreach ($placeholders AS $key => $fallback)
+        {
+            if (!\array_key_exists($key, $data))
+            {
+                $data[$key] = null;
+            }
+
+            if ($data[$key] === null)
+            {
+                $data[$key] = $fallback;
+            }
+        }
+
+        if ($data['content_type_plural'] === null)
+        {
+            throw new InvalidContentTypePluralProvidedException($data['content_type_plural']);
+        }
+
+        return parent::setupData($data);
+    }
+
+    protected function increaseStepCount() : void
+    {
+        $this->data['steps']++;
+    }
+
+    protected function increaseDoneCount() : void
+    {
+        $this->data['done']++;
+    }
+
+    protected function hasSeededAll() : bool
+    {
+        return $this->getDoneCount() === $this->getLimit();
+    }
 
     /**
      * @param int $maxRunTime
      *
      * @return JobResult
+     *
      * @throws \Exception
      */
-    public function run($maxRunTime): JobResult
+    public function run($maxRunTime) : JobResult
     {
-        $startTime = microtime(true);
-        $seedRepo = $this->getSeedRepo();
+        $startTime = \microtime(true);
 
-        if (!is_array($this->data['seeds']))
+        $this->increaseStepCount();
+
+        if ($this->hasSeededAll())
         {
-            $this->data['seeds'] = $this->data['current_seed'] ? [$this->data['type']] : $seedRepo->getAvailableSeeds();
-            $this->data['current_seed'] = null;
-            if (is_array($this->data['bulk_limits']))
-            {
-                $this->data['limit'] = null;
-            }
+            return $this->complete();
         }
 
-        if (!$this->data['current_seed'])
-        {
-            $this->data['current_seed'] = array_shift($this->data['seeds']);
-            if (!$this->data['current_seed'])
-            {
-                return $this->complete();
-            }
-
-            if (is_array($this->data['bulk_limits']))
-            {
-                $this->data['limit'] = $this->data['bulk_limits'][$this->data['current_seed']] ?? null;
-            }
-
-            if (!$this->data['limit'])
-            {
-                $this->data['current_seed'] = null;
-                return $this->resume();
-            }
-            $this->data['done'] = 0;
-        }
-
-        $currentSeed = $this->data['current_seed'];
-        $limit = $this->data['limit'];
-
-        if (!$seedRepo->isValidSeed($currentSeed))
-        {
-            $this->data['current_seed'] = null;
-
-            if (is_array($this->data['bulk_limits']))
-            {
-                $this->data['limit'] = null;
-            }
-            return $this->resume();
-        }
-
-        $seedHandler = $seedRepo->getSeedHandler($currentSeed, false);
-        if (!$seedHandler)
-        {
-            $this->data['current_seed'] = null;
-
-            if (is_array($this->data['bulk_limits']))
-            {
-                $this->data['limit'] = null;
-            }
-            return $this->resume();
-        }
-
-        $this->currentSeedTitle = $seedHandler->getTitle();
-
-        /**
-         * @return bool
-         */
-        $hasMore = function () use($limit)
-        {
-            return $this->data['done'] < $limit;
-        };
-
+        $doneNow = 0;
         do
         {
-            $seedHandler->seed($errors);
-
-            if ($errors)
+            if ($this->hasSeededAll())
             {
-                foreach ($errors AS $error)
-                {
-                    \XF::logException($error);
-                }
-            }
-            else
-            {
-                $this->data['done']++;
+                break;
             }
 
-            $this->saveIncrementalData();
-
-            // we need to throw away the previous entity cache to prevent potential memory issues
-            $this->app->em()->clearEntityCache();
-
-            if (!$hasMore())
+            if ($this->seed()->insert($this->getSeedParams()))
             {
-                $seedHandler->postSeed();
-
-                $this->data['current_seed'] = null;
-                return $this->resume();
+                $this->increaseDoneCount();
+                $doneNow++;
             }
 
             $timeRemaining = $maxRunTime - (microtime(true) - $startTime);
-            $errors = [];
         }
-        while ($hasMore() && $timeRemaining >= 0.5);
+        while ($timeRemaining >= 0.5);
 
         return $this->resume();
     }
 
-    /**
-     * @return string
-     * @throws \Exception
-     */
-    public function getStatusMessage(): string
+    public function getStatusMessage() : string
     {
-        $actionPhrase = \XF::phrase('tckSeeder_seeding');
+        $seeding = \XF::phrase('tckSeeder_seeding');
+        $type = $this->getContentTypePlural();
 
-        return sprintf('%s... %s (%s/%s)',
-            $actionPhrase,
-            $this->currentSeedTitle,
-            $this->app->language()->numberFormat($this->data['done']),
-            $this->app->language()->numberFormat($this->data['limit'])
+        return \sprintf(
+            '%s... %s (%s/%s)',
+            $seeding, $type,
+            $this->getDoneCount(), $this->getLimit()
         );
     }
 
-    /**
-     * @return bool
-     */
-    public function canTriggerByChoice(): bool
+    public function canCancel() : bool
     {
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    public function canCancel(): bool
+    public function canTriggerByChoice() : bool
     {
         return true;
     }
 
-    /**
-     * @return Repository|SeedRepo
-     */
-    protected function getSeedRepo() : SeedRepo
+    protected function app() : BaseApp
     {
-        return $this->app->repository('TickTackk\Seeder:Seed');
+        return $this->app;
+    }
+
+    protected function repository(string $identifier) : Repository
+    {
+        return $this->app()->repository($identifier);
+    }
+
+    protected function finder(string $identifier) : Finder
+    {
+        return $this->app()->finder($identifier);
+    }
+
+    protected function service(string $identifier, ...$arguments) : AbstractService
+    {
+        return $this->app()->service($identifier, ...$arguments);
+    }
+
+    protected function db() : DbAdapter
+    {
+        return $this->app()->db();
+    }
+
+    protected function jobManager() : JobManager
+    {
+        return $this->app()->jobManager();
+    }
+
+    protected function em() : EntityManager
+    {
+        return $this->app()->em();
+    }
+
+    /**
+     * @return AbstractSeed|null
+     *
+     * @throws \Exception
+     */
+    protected function seed() :? AbstractSeed
+    {
+        $class = $this->getSeedClass();
+        if (!$class || empty($class))
+        {
+            throw new InvalidSeedClassProvidedException($class);
+        }
+
+        $class = \XF::stringToClass($class, '\%s\Seed\%s');
+        $class = \XF::extendClass($class);
+
+        if (!\class_exists($class))
+        {
+            throw new InvalidSeedClassProvidedException($class);
+        }
+
+        return new $class($this->app());
     }
 }

@@ -12,18 +12,7 @@ use XF\Service\User\Registration as UserRegistrationSvc;
  */
 class User extends AbstractSeed
 {
-    /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('user', true);
-    }
-
-    /**
-     * @param array|null $errors
-     */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []): bool
     {
         $faker = $this->faker();
 
@@ -38,7 +27,7 @@ class User extends AbstractSeed
         $registrationService->setPassword($faker->password, '', false);
         $registrationService->setReceiveAdminEmail($faker->boolean);
 
-        $dob = explode('-', $faker->dateTimeThisCentury->format('d-m-Y'));
+        $dob = \explode('-', $faker->dateTimeThisCentury->format('d-m-Y'));
         $registrationService->setDob($dob[0], $dob[1], $dob[2]);
         $registrationService->skipEmailConfirmation();
         $registrationService->setReceiveAdminEmail($faker->boolean);
@@ -48,9 +37,16 @@ class User extends AbstractSeed
             $registrationService->setAvatarUrl($faker->imageUrl());
         }
 
-        if ($registrationService->validate($errors))
+        if (!$registrationService->validate())
         {
-            $registrationService->save();
+            return false;
         }
+
+        if (!$registrationService->save())
+        {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -15,56 +15,54 @@ use XF\Entity\Thread as ThreadEntity;
  */
 class Post extends AbstractSeed
 {
-    /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('post', true);
-    }
-
-    /**
-     * @param array|null $errors
-     */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []): bool
     {
         /** @var ThreadEntity $randomThread */
         $randomThread = $this->randomEntity('XF:Thread');
-        if ($randomThread)
+        if (!$randomThread)
         {
-            $faker = $this->faker();
+            return false;
+        }
 
-            /** @var ThreadReplierSvc $threadReplier */
-            $threadReplier = $this->service('XF:Thread\Replier', $randomThread);
-            $threadReplier->setIsAutomated();
-            if ($faker->boolean)
+        $faker = $this->faker();
+
+        /** @var ThreadReplierSvc $threadReplier */
+        $threadReplier = $this->service('XF:Thread\Replier', $randomThread);
+        $threadReplier->setIsAutomated();
+
+        if ($faker->boolean)
+        {
+            $threadReplier->logIp($faker->boolean ? $faker->ipv6 : $faker->ipv4);
+        }
+
+        $threadReplier->setMessage($faker->text);
+
+        if (!$threadReplier->validate())
+        {
+            return false;
+        }
+
+        $threadReplier->save();
+        $threadReplier->sendNotifications();
+
+        if ($this->faker()->boolean)
+        {
+            $threadWatchRepo = $this->getThreadWatchRepo();
+            $visitor = \XF::visitor();
+
+            if ($this->faker()->boolean)
             {
-                $threadReplier->logIp($faker->boolean ? $faker->ipv6 : $faker->ipv4);
+                $watchState = $this->faker()->boolean ? 'watch_no_email' : 'watch_email';
+                $threadWatchRepo->setWatchState($randomThread, $visitor, $watchState);
             }
-            $threadReplier->setMessage($faker->text);
-            if ($threadReplier->validate($errors))
+            else
             {
-                $threadReplier->save();
-                $threadReplier->sendNotifications();
-
-                if ($this->faker()->boolean)
-                {
-                    $threadWatchRepo = $this->getThreadWatchRepo();
-                    $visitor = \XF::visitor();
-
-                    if ($this->faker()->boolean)
-                    {
-                        $watchState = $this->faker()->boolean ? 'watch_no_email' : 'watch_email';
-                        $threadWatchRepo->setWatchState($randomThread, $visitor, $watchState);
-                    }
-                    else
-                    {
-                        // use user preferences
-                        $threadWatchRepo->autoWatchThread($randomThread, $visitor, false);
-                    }
-                }
+                // use user preferences
+                $threadWatchRepo->autoWatchThread($randomThread, $visitor, false);
             }
         }
+
+        return true;
     }
 
     /**
