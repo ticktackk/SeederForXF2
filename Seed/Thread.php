@@ -3,17 +3,10 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
-use XF\Mvc\Entity\Repository;
-use XF\Phrase;
 use XF\Repository\ThreadWatch as ThreadWatchRepo;
 use XF\Service\Thread\Creator as ThreadCreatorSvc;
 use XF\Repository\Thread as ThreadRepo;
 
-/**
- * Class Thread
- *
- * @package TickTackk\Seeder\Seed
- */
 class Thread extends AbstractSeed
 {
     protected function seed(array $params = []): bool
@@ -82,17 +75,11 @@ class Thread extends AbstractSeed
         return true;
     }
 
-    /**
-     * @return Repository|ThreadWatchRepo
-     */
     protected function getThreadWatchRepo() : ThreadWatchRepo
     {
         return $this->repository('XF:ThreadWatch');
     }
 
-    /**
-     * @return Repository|ThreadRepo
-     */
     protected function getThreadRepo() : ThreadRepo
     {
         return $this->repository('XF:Thread');

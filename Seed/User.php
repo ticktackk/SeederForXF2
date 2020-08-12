@@ -2,14 +2,8 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use XF\Phrase;
 use XF\Service\User\Registration as UserRegistrationSvc;
 
-/**
- * Class User
- *
- * @package TickTackk\Seeder\Seed
- */
 class User extends AbstractSeed
 {
     protected function seed(array $params = []): bool

@@ -10,13 +10,8 @@ use XF\Mvc\Entity\Manager as EntityManager;
 use XF\Mvc\Entity\Repository;
 use XF\App as BaseApp;
 use Faker\Generator as FakerGenerator;
-use XF\Phrase;
 use Faker\Factory as FakerFactory;
 use XF\Service\AbstractService;
-use function count;
-use function is_array;
-use function is_bool;
-use function is_string;
 
 /**
  * Class AbstractSeed
@@ -35,11 +30,6 @@ abstract class AbstractSeed
      */
     protected $faker;
 
-    /**
-     * AbstractSeed constructor.
-     *
-     * @param BaseApp $app
-     */
     public function __construct(BaseApp $app)
     {
         $this->app = $app;
@@ -50,10 +40,6 @@ abstract class AbstractSeed
     abstract protected function seed(array $params = []) : bool;
 
     /**
-     * @param array|null $params
-     *
-     * @return bool
-     *
      * @throws \Exception
      */
     public function insert(?array $params = []) : bool
@@ -74,13 +60,6 @@ abstract class AbstractSeed
         }
     }
 
-    /**
-     * @param string $identifier
-     * @param array  $whereArr
-     * @param array $withArr
-     *
-     * @return null|Entity
-     */
     protected function randomEntity(string $identifier, array $whereArr = [], array $withArr = []) :? Entity
     {
         $randomEntities = $this->randomEntities($identifier, 1, $whereArr, $withArr);
@@ -93,15 +72,6 @@ abstract class AbstractSeed
         return null;
     }
 
-    /**
-     * @param string      $identifier
-     * @param int         $limit
-     * @param array       $whereArr
-     * @param array       $withArr
-     * @param string|null $orderBy
-     *
-     * @return ArrayCollection
-     */
     protected function randomEntities(string $identifier, int $limit, array $whereArr = [], array $withArr = [], string $orderBy = null) : ArrayCollection
     {
         $finder = $this->finder($identifier)
@@ -128,9 +98,6 @@ abstract class AbstractSeed
         return $finder->fetch();
     }
 
-    /**
-     * @return FakerGenerator
-     */
     public function faker(): FakerGenerator
     {
         if ($this->faker === null)
@@ -141,47 +108,27 @@ abstract class AbstractSeed
         return $this->faker;
     }
 
-    /**
-     * @param $class
-     *
-     * @return AbstractService
-     */
-    protected function service(string $class) : AbstractService
+    protected function service(string $class, ...$arguments) : AbstractService
     {
-        return call_user_func_array([$this->app(), 'service'], func_get_args());
+        return $this->app()->service($class, ...$arguments);
     }
 
-    /**
-     * @param string $identifier
-     *
-     * @return Repository
-     */
     protected function repository(string $identifier): Repository
     {
         return $this->app()->repository($identifier);
     }
 
-    /**
-     * @param string $identifier
-     *
-     * @return Finder
-     */
     protected function finder(string $identifier): Finder
     {
         return $this->app()->finder($identifier);
     }
 
-    /**
-     * @return ArrayObject
-     */
     protected function options() : ArrayObject
     {
         return $this->app()->options();
     }
 
     /**
-     * @param string|null $key
-     *
      * @return mixed
      */
     protected function config(string $key = null)
@@ -189,17 +136,11 @@ abstract class AbstractSeed
         return $this->app()->config($key);
     }
 
-    /**
-     * @return EntityManager
-     */
     protected function em() : EntityManager
     {
         return $this->app()->em();
     }
 
-    /**
-     * @return BaseApp
-     */
     protected function app() : BaseApp
     {
         return $this->app;

@@ -2,15 +2,9 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use XF\Phrase;
 use XF\Service\Conversation\Replier as ConversationReplier;
 use XF\Entity\ConversationRecipient as ConversationRecipientEntity;
 
-/**
- * Class ConversationMessage
- *
- * @package TickTackk\Seeder\Seed
- */
 class ConversationMessage extends AbstractSeed
 {
     protected function seed(array $params = []): bool

@@ -2,17 +2,10 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use XF\Mvc\Entity\Repository;
-use XF\Phrase;
 use XF\Repository\ThreadWatch as ThreadWatchRepo;
 use XF\Service\Thread\Replier as ThreadReplierSvc;
 use XF\Entity\Thread as ThreadEntity;
 
-/**
- * Class Post
- *
- * @package TickTackk\Seeder\Seed
- */
 class Post extends AbstractSeed
 {
     protected function seed(array $params = []): bool
@@ -65,9 +58,6 @@ class Post extends AbstractSeed
         return true;
     }
 
-    /**
-     * @return Repository|ThreadWatchRepo
-     */
     protected function getThreadWatchRepo() : ThreadWatchRepo
     {
         return $this->repository('XF:ThreadWatch');

@@ -3,14 +3,8 @@
 namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
-use XF\Phrase;
 use XF\Service\Conversation\Creator as ConversationCreatorSvc;
 
-/**
- * Class Conversation
- *
- * @package TickTackk\Seeder\Seed
- */
 class Conversation extends AbstractSeed
 {
     protected function seed(array $params = []): bool
