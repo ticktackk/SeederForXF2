@@ -12,7 +12,6 @@ use XF\Mvc\Entity\Repository;
 use XF\Mvc\Entity\Finder;
 use XF\Db\AbstractAdapter as DbAdapter;
 use XF\Job\AbstractJob;
-use XF\Phrase;
 use XF\Service\AbstractService;
 use XF\Mvc\Entity\Manager as EntityManager;
 

@@ -3,7 +3,6 @@
 namespace TickTackk\Seeder\Seed;
 
 use XF\Mvc\Entity\Entity;
-use XF\Mvc\Entity\Repository;
 use XF\Mvc\Entity\Structure as EntityStructure;
 use XF\Phrase;
 use XF\Repository\Reaction as ReactionRepo;

@@ -7,22 +7,13 @@ use Faker\Generator;
 use Faker\Provider\Lorem;
 use Faker\Provider\Youtube as YouTubeFakerProvider;
 use TickTackk\Seeder\Seed\Exception\DownloadUrlDidNotReturnOkResponseException;
-use XF\Http\Upload as HttpUpload;
 use XF\Mvc\Entity\Entity;
-use XF\Phrase;
-use XF\Repository\Attachment as AttachmentRepo;
 use XF\Repository\BbCodeMediaSite as BbCodeMediaSiteRepo;
-use XF\Service\Attachment\Preparer as AttachmentPreparerSvc;
-use XF\Util\File;
 use XFMG\Entity\Album as AlbumEntity;
 use XFMG\Entity\Category as CategoryEntity;
 use XFMG\Entity\MediaTemp as MediaTempEntity;
 use XFMG\Service\Media\Creator as MediaCreatorSvc;
 use XFMG\Service\Media\TempCreator as MediaTempCreatorSvc;
-use XF\FileWrapper;
-use XF\Util\Random as RandomUtil;
-use XFMG\Attachment\Media as MediaAttachmentHandler;
-use XF\Attachment\Manipulator as AttachmentManipulator;
 
 class MediaGalleryItem extends AbstractSeed
 {

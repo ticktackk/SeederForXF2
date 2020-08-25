@@ -8,8 +8,6 @@ use XF\Attachment\AbstractHandler as AttachmentHandler;
 use XF\Attachment\Manipulator as AttachmentManipulator;
 use XF\Entity\Attachment as AttachmentEntity;
 use XF\Http\Upload as HttpUpload;
-use XF\Mvc\Entity\ArrayCollection;
-use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Finder;
 use XF\Mvc\Entity\Manager as EntityManager;
 use XF\Mvc\Entity\Repository;
@@ -119,6 +117,9 @@ abstract class AbstractSeed
         return $this->createHttpUploadFromFile($downloadedFileData['file'], $downloadedFileData['randomFilename']);
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function getAttachmentManipulator(AttachmentHandler $handler, array $context) : AttachmentManipulator
     {
         /** @var AttachmentManipulator $manipulator */

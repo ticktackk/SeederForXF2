@@ -4,7 +4,6 @@ namespace TickTackk\Seeder\Seed;
 
 use XF\Repository\ThreadWatch as ThreadWatchRepo;
 use XF\Service\Thread\Replier as ThreadReplierSvc;
-use XF\Entity\Thread as ThreadEntity;
 
 class Post extends AbstractSeed
 {
