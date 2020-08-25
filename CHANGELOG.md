@@ -7,6 +7,7 @@ CHANGELOG
 - **New:** Seed for resource manager category (#6)
 - **New:** Seed for media gallery item (#4)
 - **New:** Seed for resource manager item (#8)
+- **New:** Seed for resource manager update (#9)
 - **Change:** Set minimum Faker version to 1.9 (#3)
 - **Change:** Require each seed to have its own CLI command to allow better configuration (#5)
 
