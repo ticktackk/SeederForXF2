@@ -4,8 +4,98 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ef598bf80fc5e6028276416a24a17ee",
+    "content-hash": "d0796f0e35547fe04f8d5d0fd9dfb9ee",
     "packages": [
+        {
+            "name": "aalaap/faker-youtube",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aalaap/faker-youtube.git",
+                "reference": "58678baec96c1893e27537a51fd613e852e6755f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aalaap/faker-youtube/zipball/58678baec96c1893e27537a51fd613e852e6755f",
+                "reference": "58678baec96c1893e27537a51fd613e852e6755f",
+                "shasum": ""
+            },
+            "require": {
+                "fzaninotto/faker": "^1.7",
+                "php": "^5.6 || ^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Faker\\Provider\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "WTFPL"
+            ],
+            "authors": [
+                {
+                    "name": "Aalaap Ghag",
+                    "email": "aalaap@gmail.com"
+                }
+            ],
+            "description": "Faker provider for generating fake YouTube video URLs",
+            "keywords": [
+                "faker",
+                "provider",
+                "youtube"
+            ],
+            "time": "2018-02-15T06:24:43+00:00"
+        },
+        {
+            "name": "bluemmb/faker-picsum-photos-provider",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bluemmb/Faker-PicsumPhotos.git",
+                "reference": "3c21793ba349f0b74567ebfa6ce325dc3bcefafe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bluemmb/Faker-PicsumPhotos/zipball/3c21793ba349f0b74567ebfa6ce325dc3bcefafe",
+                "reference": "3c21793ba349f0b74567ebfa6ce325dc3bcefafe",
+                "shasum": ""
+            },
+            "require": {
+                "fzaninotto/faker": "~1",
+                "php": "^5.3.3 || ^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bluemmb\\Faker\\": "."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mohammad Eftekhari",
+                    "email": "bluemmb22@gmail.com"
+                }
+            ],
+            "description": "picsum.photos provider for Faker",
+            "keywords": [
+                "faker",
+                "picsum.photos",
+                "provider"
+            ],
+            "time": "2018-08-18T10:17:02+00:00"
+        },
         {
             "name": "fzaninotto/faker",
             "version": "v1.9.1",

@@ -3,6 +3,8 @@
         "vendor-dir": "_vendor"
 	},
     "require": {
-        "fzaninotto/faker": "1.9.*"
+        "fzaninotto/faker": "1.9.*",
+        "aalaap/faker-youtube": "^1.2",
+        "bluemmb/faker-picsum-photos-provider": "^1.0"
     }
 }

@@ -19,7 +19,8 @@
         "php": [
             "7.2.0",
             "PHP 7.2.0+"
-        ]
+        ],
+        "php-ext/fileinfo": "*"
     },
     "icon": "fa-seedling",
     "composer_autoload": "_vendor/composer"
