@@ -21,6 +21,8 @@ use Bluemmb\Faker\PicsumPhotosProvider as PicsumFakerProvider;
 use Faker\Provider\Youtube as YouTubeFakerProvider;
 use XF\Util\File as FileUtil;
 use XF\Util\Random as RandomUtil;
+use XF\Finder\User as UserFinder;
+use XF\Entity\User as UserEntity;
 
 /**
  * Class AbstractSeed
@@ -48,13 +50,21 @@ abstract class AbstractSeed
 
     abstract protected function seed(array $params = []) : bool;
 
+    protected function setupVisitorFinder(UserFinder $userFinder) : UserFinder
+    {
+        return $userFinder;
+    }
+
     /**
      * @throws \Exception
      */
     public function insert(?array $params = []) : bool
     {
-        /** @var \XF\Entity\User $randomUser */
-        $randomUser = $this->finderWithRandomOrder('XF:User')->fetchOne();
+        /** @var UserFinder $randomUserFinder */
+        $randomUserFinder = $this->finderWithRandomOrder('XF:User');
+
+        /** @var UserEntity $randomUser */
+        $randomUser = $this->setupVisitorFinder($randomUserFinder)->fetchOne();
 
         try
         {
@@ -117,10 +127,15 @@ abstract class AbstractSeed
         return $this->createHttpUploadFromFile($downloadedFileData['file'], $downloadedFileData['randomFilename']);
     }
 
+    protected function generateAttachmentHash() : string
+    {
+        return \md5(\microtime(true) . RandomUtil::getRandomString(8));
+    }
+
     /**
      * @throws \Exception
      */
-    protected function getAttachmentManipulator(AttachmentHandler $handler, array $context) : AttachmentManipulator
+    protected function getAttachmentManipulator(AttachmentHandler $handler, array $context, string $attachmentHash = null) : AttachmentManipulator
     {
         /** @var AttachmentManipulator $manipulator */
         $class = \XF::extendClass('XF\Attachment\Manipulator');
@@ -128,23 +143,31 @@ abstract class AbstractSeed
             $handler,
             $this->getAttachmentRepo(),
             $context,
-            \md5(\microtime(true) . RandomUtil::getRandomString(8))
+            $attachmentHash ?: $this->generateAttachmentHash()
         );
     }
 
-    protected function insertAttachmentFromHttpUpload(HttpUpload $upload, string $contentType, array $context, Phrase &$error = null) :? AttachmentEntity
+    protected function insertAttachmentFromHttpUpload(HttpUpload $upload, string $contentType, array $context, string $attachmentHash = null, Phrase &$error = null) :? AttachmentEntity
     {
         $attachmentHandler = $this->getAttachmentHandler($contentType);
-        $attachmentManipulator = $this->getAttachmentManipulator($attachmentHandler, $context);
+        $attachmentManipulator = $this->getAttachmentManipulator($attachmentHandler, $context, $attachmentHash);
         return $attachmentManipulator->insertAttachmentFromUpload($upload, $error);
     }
 
     /**
      * @throws \Exception
      */
-    protected function insertAttachmentFromUrl(string $url, string $contentType, array $context, Phrase &$error = null) :? AttachmentEntity
+    protected function insertAttachmentFromUrl(string $url, string $contentType, array $context, string $attachmentHash = null, Phrase &$error = null) :? AttachmentEntity
     {
-        return $this->insertAttachmentFromHttpUpload($this->createHttpUploadFromUrl($url), $contentType, $context, $error);
+        return $this->insertAttachmentFromHttpUpload($this->createHttpUploadFromUrl($url), $contentType, $context, $attachmentHash, $error);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected function insertAttachmentFromTempFile(string $filePath, string $fileName, string $contentType, array $context, string $attachmentHash = null, Phrase &$error = null) :? AttachmentEntity
+    {
+        return $this->insertAttachmentFromHttpUpload($this->createHttpUploadFromFile($filePath, $fileName), $contentType, $context, $attachmentHash, $error);
     }
 
     protected function finderWithRandomOrder(string $identifier) : Finder
@@ -361,6 +384,24 @@ abstract class AbstractSeed
         }
 
         return $mimeMap[$mime];
+    }
+
+    protected function getRandomCostAmount(int $max = null) : float
+    {
+        $faker = $this->faker();
+        do
+        {
+            $amount = $faker->boolean ? $faker->randomFloat(null, 0.01, $max) : $faker->randomNumber();
+        }
+        while ($amount <= 0);
+
+        $amount = (float) $amount;
+        if ($max && $amount > $max)
+        {
+            return $this->getRandomCostAmount($max);
+        }
+
+        return $amount;
     }
 
     protected function service(string $class, ...$arguments) : AbstractService

@@ -55,8 +55,7 @@ class MediaGalleryItem extends AbstractSeed
                         $attachment = $this->insertAttachmentFromUrl(
                             $faker->imageUrl(),
                             'xfmg_media',
-                            $contextParams,
-                            $error
+                            $contextParams
                         );
                         if (!$attachment)
                         {
