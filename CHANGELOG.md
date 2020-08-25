@@ -1,6 +1,10 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Alpha 2 (`1010012`)
+
+- **New:** Seed for media gallery comment (#12)
+
 ## 1.1.0 Alpha 1 (`1010011`)
 
 - **New:** Seed for media gallery category (#7)

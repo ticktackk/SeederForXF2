@@ -7,7 +7,7 @@ use XFMG\Service\Album\Creator as AlbumCreatorSvc;
 
 class MediaGalleryAlbum extends AbstractSeed
 {
-    use MediaGalleryRandomContainerTrait;
+    use MediaGalleryRandomContentTrait;
 
     protected function seed(array $params = []): bool
     {
