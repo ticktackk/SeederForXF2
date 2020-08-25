@@ -4,7 +4,7 @@ This add-on helps in filling development board with dummy data.
 [HEADING=1]Requirements[/HEADING]
 [LIST]
 [*]PHP 7.2.0+
-[*]php-ext/fileinfo
+[*]PHP Fileinfo module
 [/LIST]
 [HEADING=1]CLI Commands[/HEADING]
 [TABLE]
