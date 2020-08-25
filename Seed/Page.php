@@ -2,34 +2,15 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use XF\Phrase;
+use XF\Entity\AbstractNode as AbstractNodeEntity;
 
-/**
- * Class Page
- *
- * @package TickTackk\Seeder\Seed
- */
 class Page extends AbstractNode
 {
-    /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('page', true);
-    }
-
-    /**
-     * @return string
-     */
     protected function getNodeTypeId(): string
     {
         return 'Page';
     }
 
-    /**
-     * @return array
-     */
     protected function getNodeInput() : array
     {
         $nodeInput = parent::getNodeInput();
@@ -39,22 +20,19 @@ class Page extends AbstractNode
         return $nodeInput;
     }
 
-    /**
-     * @return null|\XF\Entity\AbstractNode
-     */
-    protected function getRandomParentNode(): ?\XF\Entity\AbstractNode
+    protected function getRandomParentNode() :? AbstractNodeEntity
     {
-        if ($this->faker()->boolean)
+        $faker = $this->faker();
+        if (!$faker->boolean)
         {
-            /** @var \XF\Entity\Forum $randomPage */
-            $randomPage = $this->randomEntity('XF:Forum');
-        }
-        else
-        {
-            /** @var \XF\Entity\Category $randomPage */
-            $randomPage = $this->randomEntity('XF:Category');
+            return null;
         }
 
-        return $randomPage;
+        if ($faker->boolean)
+        {
+            return $this->finderWithRandomOrder('XF:Forum')->fetchOne();
+        }
+
+        return $this->finderWithRandomOrder('XF:Category')->fetchOne();
     }
 }

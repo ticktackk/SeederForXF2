@@ -2,53 +2,26 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use XF\Phrase;
-
-/**
- * Class Forum
- *
- * @package TickTackk\Seeder\Seed
- */
 class Forum extends AbstractNode
 {
-    /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('forum', true);
-    }
-
-    /**
-     * @return string
-     */
     protected function getNodeTypeId(): string
     {
         return 'Forum';
     }
 
-    /**
-     * @return null|\XF\Entity\AbstractNode
-     */
     protected function getRandomParentNode(): ?\XF\Entity\AbstractNode
     {
         $faker = $this->faker();
-        $randomNode = null;
+        if (!$faker->boolean)
+        {
+            return null;
+        }
 
         if ($faker->boolean)
         {
-            if ($faker->boolean)
-            {
-                /** @var \XF\Entity\Forum $randomNode */
-                $randomNode = $this->randomEntity('XF:Forum');
-            }
-            else
-            {
-                /** @var \XF\Entity\Forum $randomNode */
-                $randomNode = $this->randomEntity('XF:Category');
-            }
+            return $this->finderWithRandomOrder('XF:Forum')->fetchOne();
         }
 
-        return $randomNode;
+        return $this->finderWithRandomOrder('XF:Category')->fetchOne();
     }
 }

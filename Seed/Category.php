@@ -2,44 +2,20 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use XF\Phrase;
+use XF\Entity\AbstractNode as AbstractNodeEntity;
 
-/**
- * Class Category
- *
- * @package TickTackk\Seeder\Seed
- */
 class Category extends AbstractNode
 {
-    /**
-     * @return Phrase
-     */
-    public function getTitle() : Phrase
-    {
-        return $this->app->getContentTypePhrase('category', true);
-    }
-
-    /**
-     * @return string
-     */
     protected function getNodeTypeId(): string
     {
         return 'Category';
     }
 
-    /**
-     * @return null|\XF\Entity\AbstractNode
-     */
-    protected function getRandomParentNode(): ?\XF\Entity\AbstractNode
+    protected function getRandomParentNode() :? AbstractNodeEntity
     {
-        /** @var \XF\Entity\Category $randomCategory */
-        $randomCategory = $this->randomEntity('XF:Category');
-        return $randomCategory;
+        return $this->finderWithRandomOrder('XF:Category')->fetchOne();
     }
 
-    /**
-     * @return array
-     */
     protected function getNodeInput() : array
     {
         $nodeInput = parent::getNodeInput();

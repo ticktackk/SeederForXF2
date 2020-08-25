@@ -5,29 +5,15 @@ namespace TickTackk\Seeder\Seed;
 use Faker\Provider\Lorem;
 use XF\Entity\Node as NodeEntity;
 
-/**
- * Class AbstractNode
- *
- * @package TickTackk\Seeder\Seed
- */
 abstract class AbstractNode extends AbstractSeed
 {
-    /**
-     * @return string
-     */
     abstract protected function getNodeTypeId() : string;
 
-    /**
-     * @return null|\XF\Entity\AbstractNode
-     */
     protected function getRandomParentNode() :? \XF\Entity\AbstractNode
     {
         return null;
     }
 
-    /**
-     * @return array
-     */
     protected function getNodeInput() : array
     {
         $faker = $this->faker();
@@ -45,9 +31,9 @@ abstract class AbstractNode extends AbstractSeed
     }
 
     /**
-     * @param array|null $errors
+     * @throws \XF\PrintableException
      */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []) : bool
     {
         /** @var NodeEntity $node */
         $node = $this->app->em()->create('XF:Node');
@@ -59,14 +45,12 @@ abstract class AbstractNode extends AbstractSeed
         $node->addCascadedSave($data);
         $form->basicEntitySave($node, $this->getNodeInput());
 
-        try
+        if (!$form->run(false))
         {
-            $form->run();
+            return false;
         }
-        catch (\XF\PrintableException $printableException)
-        {
-            \XF::logException($printableException);
-        }
+
+        return true;
     }
 
     public function postSeed(): void

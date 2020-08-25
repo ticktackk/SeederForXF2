@@ -3,46 +3,25 @@
 namespace TickTackk\Seeder\Seed;
 
 use XF\Mvc\Entity\Entity;
-use XF\Mvc\Entity\Repository;
 use XF\Mvc\Entity\Structure as EntityStructure;
 use XF\Phrase;
 use XF\Repository\Reaction as ReactionRepo;
 use XF\Entity\Reaction as ReactionEntity;
 use XF\Entity\ReactionContent as ReactionContentEntity;
 
-/**
- * Class AbstractReactionContent
- *
- * @package TickTackk\Seeder\Seed
- */
-abstract class AbstractReactionContent extends AbstractSeed
+abstract class AbstractContentReaction extends AbstractSeed
 {
-    /**
-     * @return string
-     */
     abstract protected function getEntityShortName() : string;
 
-    /**
-     * @return string
-     */
     abstract protected function getUserIdColumn() : string;
 
-    /**
-     * @return string
-     */
     abstract protected function getReactionRelationName() : string;
 
-    /**
-     * @return EntityStructure
-     */
     protected function getStructure() : EntityStructure
     {
         return $this->app->em()->getEntityStructure($this->getEntityShortName());
     }
 
-    /**
-     * @return Phrase
-     */
     public function getTitle() : Phrase
     {
         $structure = $this->getStructure();
@@ -53,11 +32,6 @@ abstract class AbstractReactionContent extends AbstractSeed
         ]);
     }
 
-    /**
-     * @param Entity $content
-     *
-     * @return null|Entity|ReactionEntity
-     */
     public function getReaction(Entity $content) :? ReactionEntity
     {
         /** @var ReactionContentEntity[] $reactionContents */
@@ -69,12 +43,11 @@ abstract class AbstractReactionContent extends AbstractSeed
             $reactionIds[] = $reactionContent->reaction_id;
         }
 
-        return $this->randomEntity('XF:Reaction', [['reaction_id', '<>', $reactionIds]]);
+        return $this->finderWithRandomOrder('XF:Reaction')
+            ->where('reaction_id', '<>', $reactionIds)
+            ->fetchOne();
     }
 
-    /**
-     * @return int
-     */
     protected function getRandomContentId() : int
     {
         $visitor = \XF::visitor();
@@ -99,33 +72,31 @@ abstract class AbstractReactionContent extends AbstractSeed
         ", [$structure->contentType, $visitor->user_id, $totalReactions]);
     }
 
-    /**
-     * @param array|null $errors
-     */
-    protected function _seed(array &$errors = null) : void
+    protected function seed(array $params = []): bool
     {
-        $visitor = \XF::visitor();
         $randomEntity = $this->app->find($this->getEntityShortName(), $this->getRandomContentId());
-
-        if ($randomEntity)
+        if (!$randomEntity)
         {
-            $reaction = $this->getReaction($randomEntity);
-            if ($reaction)
-            {
-                $reactionRepo = $this->getReactionRepo();
-                $reactionRepo->reactToContent($reaction->reaction_id,
-                    $randomEntity->getEntityContentType(),
-                    $randomEntity->getExistingEntityId(),
-                    $visitor,
-                    $this->faker()->boolean
-                );
-            }
+            return false;
         }
+
+        $reaction = $this->getReaction($randomEntity);
+        if (!$reaction)
+        {
+            return false;
+        }
+
+        $reactionRepo = $this->getReactionRepo();
+        $reactionContent = $reactionRepo->reactToContent($reaction->reaction_id,
+            $randomEntity->getEntityContentType(),
+            $randomEntity->getExistingEntityId(),
+            \XF::visitor(),
+            $this->faker()->boolean
+        );
+
+        return $reactionContent ? true : false;
     }
 
-    /**
-     * @return Repository|ReactionRepo
-     */
     protected function getReactionRepo() : ReactionRepo
     {
         return $this->app->repository('XF:Reaction');

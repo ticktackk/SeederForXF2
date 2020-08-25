@@ -2,8 +2,8 @@
     "legacy_addon_id": "",
     "title": "Seeder",
     "description": "This add-on helps in filling development board with dummy data.",
-    "version_id": 1000170,
-    "version_string": "1.0.1",
+    "version_id": 1010011,
+    "version_string": "1.1.0 Alpha 1",
     "dev": "TickTackk",
     "dev_url": "https://xenforo.com/community/members/batpool52.90375/",
     "faq_url": "",
@@ -19,7 +19,8 @@
         "php": [
             "7.2.0",
             "PHP 7.2.0+"
-        ]
+        ],
+        "php-ext/fileinfo": "*"
     },
     "icon": "fa-seedling",
     "composer_autoload": "_vendor/composer"
