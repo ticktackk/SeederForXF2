@@ -11,10 +11,11 @@ class Conversation extends AbstractSeed
     {
         $visitor = \XF::visitor();
         $faker = $this->faker();
-
-        $randomUsers = $this->randomEntities('XF:User', $faker->numberBetween(1, 3), [
-            ['user_id', '<>', $visitor->user_id]
-        ]);
+        
+        $randomUsers = $this->finderWithRandomOrder('XF:User')
+            ->where('user_id', '<>', $visitor->user_id)
+            ->limit($faker->numberBetween(1, 3))
+            ->fetch();
         if (!$randomUsers->count())
         {
             return false;

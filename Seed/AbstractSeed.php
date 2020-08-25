@@ -45,7 +45,7 @@ abstract class AbstractSeed
     public function insert(?array $params = []) : bool
     {
         /** @var \XF\Entity\User $randomUser */
-        $randomUser = $this->randomEntity('XF:User');
+        $randomUser = $this->finderWithRandomOrder('XF:User')->fetchOne();
 
         try
         {

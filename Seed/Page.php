@@ -22,6 +22,17 @@ class Page extends AbstractNode
 
     protected function getRandomParentNode() :? AbstractNodeEntity
     {
-        return $this->faker()->boolean ? $this->randomEntity('XF:Forum') : $this->randomEntity('XF:Category');
+        $faker = $this->faker();
+        if (!$faker->boolean)
+        {
+            return null;
+        }
+
+        if ($faker->boolean)
+        {
+            return $this->finderWithRandomOrder('XF:Forum')->fetchOne();
+        }
+
+        return $this->finderWithRandomOrder('XF:Category')->fetchOne();
     }
 }

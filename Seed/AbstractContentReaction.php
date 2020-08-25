@@ -44,7 +44,9 @@ abstract class AbstractContentReaction extends AbstractSeed
             $reactionIds[] = $reactionContent->reaction_id;
         }
 
-        return $this->randomEntity('XF:Reaction', [['reaction_id', '<>', $reactionIds]]);
+        return $this->finderWithRandomOrder('XF:Reaction')
+            ->where('reaction_id', '<>', $reactionIds)
+            ->fetchOne();
     }
 
     protected function getRandomContentId() : int

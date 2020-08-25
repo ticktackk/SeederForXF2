@@ -27,7 +27,7 @@ abstract class AbstractCategoryTree extends AbstractSeed
 
     protected function getRandomCategory() :? AbstractCategoryTreeEntity
     {
-        return $this->randomEntity($this->getEntityIdentifier());
+        return $this->finderWithRandomOrder($this->getEntityIdentifier())->fetchOne();
     }
 
     protected function validate(FormAction $formAction, array $categoryInput) : void

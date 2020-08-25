@@ -13,7 +13,7 @@ class Category extends AbstractNode
 
     protected function getRandomParentNode() :? AbstractNodeEntity
     {
-        return $this->randomEntity('XF:Category');
+        return $this->finderWithRandomOrder('XF:Category')->fetchOne();
     }
 
     protected function getNodeInput() : array

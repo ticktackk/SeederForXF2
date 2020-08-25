@@ -10,8 +10,7 @@ class Post extends AbstractSeed
 {
     protected function seed(array $params = []): bool
     {
-        /** @var ThreadEntity $randomThread */
-        $randomThread = $this->randomEntity('XF:Thread');
+        $randomThread = $this->finderWithRandomOrder('XF:Thread')->fetchOne();
         if (!$randomThread)
         {
             return false;

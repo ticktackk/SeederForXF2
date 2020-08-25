@@ -33,7 +33,7 @@ class ResourceManagerCategory extends AbstractCategoryTree
         if ($faker->boolean)
         {
             /** @var ForumEntity $randomForum */
-            $randomForum = $this->randomEntity('XF:Forum');
+            $randomForum = $this->finderWithRandomOrder('XF:Forum')->fetchOne();
             if ($randomForum && $faker->boolean)
             {
                 $categoryInput['thread_node_id'] = $randomForum->node_id;

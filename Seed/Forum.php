@@ -12,22 +12,16 @@ class Forum extends AbstractNode
     protected function getRandomParentNode(): ?\XF\Entity\AbstractNode
     {
         $faker = $this->faker();
-        $randomNode = null;
+        if (!$faker->boolean)
+        {
+            return null;
+        }
 
         if ($faker->boolean)
         {
-            if ($faker->boolean)
-            {
-                /** @var \XF\Entity\Forum $randomNode */
-                $randomNode = $this->randomEntity('XF:Forum');
-            }
-            else
-            {
-                /** @var \XF\Entity\Forum $randomNode */
-                $randomNode = $this->randomEntity('XF:Category');
-            }
+            return $this->finderWithRandomOrder('XF:Forum')->fetchOne();
         }
 
-        return $randomNode;
+        return $this->finderWithRandomOrder('XF:Category')->fetchOne();
     }
 }

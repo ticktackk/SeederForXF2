@@ -13,11 +13,10 @@ class ConversationMessage extends AbstractSeed
         $faker = $this->faker();
 
         /** @var ConversationRecipientEntity $conversationRecipient */
-        $conversationRecipient = $conversationRecipient = $this->randomEntity('XF:ConversationRecipient', [
-            ['user_id', $visitor->user_id]
-        ], [
-            ['Conversation', true]
-        ]);
+        $conversationRecipient = $this->finderWithRandomOrder('XF:ConversationRecipient')
+            ->where('user_id', $visitor->user_id)
+            ->with('Conversation', true)
+            ->fetchOne();
 
         if (!$conversationRecipient)
         {
