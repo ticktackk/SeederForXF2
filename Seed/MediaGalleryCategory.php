@@ -48,7 +48,7 @@ class MediaGalleryCategory extends AbstractCategoryTree
         while ($categoryInput['category_type'] === null);
 
         $categoryInput['allowed_types'] = [];
-        $setupAllowedTypes = function () use($faker, $categoryInput)
+        $setupAllowedTypes = function () use($faker, &$categoryInput)
         {
             foreach (['image', 'video', 'audio', 'embed'] AS $allowedType)
             {
