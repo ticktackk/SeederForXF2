@@ -10,7 +10,7 @@ Requirements
 ------------
 
 - PHP 7.2.0+
-- php-ext/fileinfo
+- PHP Fileinfo module
 
 CLI Commands
 ------------

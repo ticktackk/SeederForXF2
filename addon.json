@@ -20,7 +20,10 @@
             "7.2.0",
             "PHP 7.2.0+"
         ],
-        "php-ext/fileinfo": "*"
+        "php-ext/fileinfo": [
+            "*",
+            "PHP Fileinfo module"
+        ]
     },
     "icon": "fa-seedling",
     "composer_autoload": "_vendor/composer"
