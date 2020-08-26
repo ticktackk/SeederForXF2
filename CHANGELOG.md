@@ -9,6 +9,7 @@ CHANGELOG
 - **New:** Seed for media gallery album reaction (#15)
 - **New:** Seed for profile post (#16)
 - **New:** Seed for profile post comment (#17)
+- **New:** Seed for profile post reaction (#18)
 
 ## 1.1.0 Alpha 1 (`1010011`)
 
