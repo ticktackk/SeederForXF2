@@ -1,6 +1,10 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Alpha 3 (`1010013`)
+
+- **Fix:** Updated license and readme files are not copied correctly to add-on archives (#29)
+
 ## 1.1.0 Alpha 2 (`1010012`)
 
 - **New:** Seed for media gallery comment (#12)
