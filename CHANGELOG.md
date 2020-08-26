@@ -4,6 +4,7 @@ CHANGELOG
 ## 1.1.0 Alpha 2 (`1010012`)
 
 - **New:** Seed for media gallery comment (#12)
+- **New:** Seed for media gallery album reaction (#15)
 
 ## 1.1.0 Alpha 1 (`1010011`)
 
