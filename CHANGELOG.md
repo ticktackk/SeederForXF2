@@ -7,6 +7,7 @@ CHANGELOG
 - **New:** Seed for media gallery item reaction (#13)
 - **New:** Seed for media gallery comment reaction (#14)
 - **New:** Seed for media gallery album reaction (#15)
+- **New:** Seed for profile post reaction (#18)
 
 ## 1.1.0 Alpha 1 (`1010011`)
 
