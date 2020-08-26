@@ -12,7 +12,7 @@ class Thread extends AbstractSeed
     protected function seed(array $params = []): bool
     {
         /** @var \XF\Entity\Forum $randomForum */
-        $randomForum = $this->finderWithRandomOrder('XF:Forum');
+        $randomForum = $this->finderWithRandomOrder('XF:Forum')->fetchOne();
         if (!$randomForum)
         {
             return false;
