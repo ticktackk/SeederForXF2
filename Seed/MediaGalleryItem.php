@@ -17,7 +17,7 @@ use XFMG\Service\Media\TempCreator as MediaTempCreatorSvc;
 
 class MediaGalleryItem extends AbstractSeed
 {
-    use MediaGalleryRandomContainerTrait;
+    use MediaGalleryRandomContentTrait;
 
     /**
      * @throws \XF\PrintableException
