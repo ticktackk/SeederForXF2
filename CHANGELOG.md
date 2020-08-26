@@ -1,6 +1,10 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Alpha 3 (`1010013`)
+
+- **Fix:** Unused content type fields still exist even after not being used at all anymore (#30)
+
 ## 1.1.0 Alpha 2 (`1010012`)
 
 - **New:** Seed for media gallery comment (#12)
