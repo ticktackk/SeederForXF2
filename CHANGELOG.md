@@ -1,6 +1,10 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Alpha 4 (`1010014`)
+
+- **Fix:** Threads cannot be seeded (#36)
+
 ## 1.1.0 Alpha 3 (`1010013`)
 
 - **Fix:** Updated license and readme files are not copied correctly to add-on archives (#29)
