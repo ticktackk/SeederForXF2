@@ -3,6 +3,7 @@ CHANGELOG
 
 ## 1.1.0 Alpha 4 (`1010014`)
 
+- **New:** Seed for threadmark category (#37)
 - **Fix:** Threads cannot be seeded (#36)
 
 ## 1.1.0 Alpha 3 (`1010013`)
