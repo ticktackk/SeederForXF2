@@ -10,6 +10,7 @@ CHANGELOG
 - **New:** Seed for banned users (#43)
 - **New:** Seed for IP address bans (#44)
 - **New:** Seed for rejected users (#42)
+- **New:** Seed for server error logs (#45)
 - **Fix:** Threads cannot be seeded (#36)
 
 ## 1.1.0 Alpha 3 (`1010013`)
