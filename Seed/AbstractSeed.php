@@ -14,8 +14,10 @@ use XF\Mvc\Entity\Repository;
 use XF\App as BaseApp;
 use Faker\Generator as FakerGenerator;
 use Faker\Factory as FakerFactory;
+use XF\Mvc\FormAction;
 use XF\Phrase;
 use XF\Repository\Attachment as AttachmentRepo;
+use XF\Repository\UserGroup as UserGroupRepo;
 use XF\Service\AbstractService;
 use Bluemmb\Faker\PicsumPhotosProvider as PicsumFakerProvider;
 use Faker\Provider\Youtube as YouTubeFakerProvider;
@@ -404,6 +406,14 @@ abstract class AbstractSeed
         return $amount;
     }
 
+    protected function getRandomUserGroupIds() : array
+    {
+        $userGroupIds = $this->getUserGroupRepo()->findUserGroupsForList()->fetch()->keys();
+        \shuffle($userGroupIds);
+
+        return \array_slice($userGroupIds, $this->faker()->numberBetween(1, \count($userGroupIds)));
+    }
+
     protected function service(string $class, ...$arguments) : AbstractService
     {
         return $this->app()->service($class, ...$arguments);
@@ -437,6 +447,11 @@ abstract class AbstractSeed
         return $this->app()->em();
     }
 
+    protected function formAction(bool $inTransaction = true) : FormAction
+    {
+        return $this->app()->formAction($inTransaction);
+    }
+
     protected function app() : BaseApp
     {
         return $this->app;
@@ -450,5 +465,10 @@ abstract class AbstractSeed
     protected function getAttachmentHandler(string $contentType) : AttachmentHandler
     {
         return $this->getAttachmentRepo()->getAttachmentHandler($contentType);
+    }
+
+    protected function getUserGroupRepo() : UserGroupRepo
+    {
+        return $this->repository('XF:UserGroup');
     }
 }

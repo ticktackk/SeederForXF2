@@ -4,6 +4,9 @@ namespace TickTackk\Seeder\Seed;
 
 use Faker\Provider\Lorem;
 use XF\Entity\Node as NodeEntity;
+use XF\Entity\Page as PageEntity;
+use XF\Mvc\FormAction;
+use XF\Entity\AbstractNode as AbstractNodeEntity;
 
 abstract class AbstractNode extends AbstractSeed
 {
@@ -31,6 +34,21 @@ abstract class AbstractNode extends AbstractSeed
     }
 
     /**
+     * @since 1.1.0 Alpha 4
+     *
+     * @param NodeEntity $node
+     * @param AbstractNodeEntity $data
+     * @param FormAction $formAction
+     */
+    protected function setupFormAction(
+        NodeEntity $node,
+        AbstractNodeEntity $data,
+        FormAction $formAction
+    ) : void
+    {
+    }
+
+    /**
      * @throws \XF\PrintableException
      */
     protected function seed(array $params = []) : bool
@@ -44,6 +62,8 @@ abstract class AbstractNode extends AbstractSeed
         $data = $node->getDataRelationOrDefault();
         $node->addCascadedSave($data);
         $form->basicEntitySave($node, $this->getNodeInput());
+
+        $this->setupFormAction($node, $data, $form);
 
         if (!$form->run(false))
         {

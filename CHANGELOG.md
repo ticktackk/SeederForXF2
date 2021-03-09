@@ -1,6 +1,22 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Alpha 4 (`1010014`)
+
+- **New:** Seed for threadmark category (#37)
+- **New:** Seed for post threadmark (#38)
+- **New:** Seed for conversation message threadmark (#39)
+- **New:** Seed for discouraged IP addresses (#41)
+- **New:** Seed for banned users (#43)
+- **New:** Seed for IP address bans (#44)
+- **New:** Seed for rejected users (#42)
+- **New:** Seed for server error logs (#45)
+- **New:** Seed for spam trigger log (#46)
+- **New:** Seed for spam cleaner log (#47)
+- **New:** Seed for email bounce log (#48)
+- **Fix:** Threads cannot be seeded (#36)
+- **Fix:** Master template is not created for page nodes (#49)
+
 ## 1.1.0 Alpha 3 (`1010013`)
 
 - **Fix:** Updated license and readme files are not copied correctly to add-on archives (#29)

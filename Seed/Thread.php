@@ -40,7 +40,7 @@ class Thread extends AbstractSeed
 
         $threadCreator->setTags($faker->words($faker->numberBetween(10, 15)));
         $threadCreator->setContent(Lorem::sentence(), $faker->text);
-        if ($threadCreator->validate($errors))
+        if (!$threadCreator->validate($errors))
         {
             return false;
         }

@@ -3,6 +3,9 @@
 namespace TickTackk\Seeder\Seed;
 
 use XF\Entity\AbstractNode as AbstractNodeEntity;
+use XF\Entity\Node as NodeEntity;
+use XF\Mvc\FormAction;
+use XF\Entity\Page as PageEntity;
 
 class Page extends AbstractNode
 {
@@ -18,6 +21,28 @@ class Page extends AbstractNode
         $nodeInput['node_name'] = $this->faker()->slug();
 
         return $nodeInput;
+    }
+
+    /**
+     * @param NodeEntity $node
+     * @param AbstractNodeEntity|PageEntity $data
+     * @param FormAction $formAction
+     */
+    protected function setupFormAction(
+        NodeEntity $node,
+        AbstractNodeEntity $data,
+        FormAction $formAction
+    ): void
+    {
+        $template = $data->getMasterTemplate();
+
+        $faker = $this->faker();
+        $template->template = $faker->boolean ? $faker->randomHtml() : $faker->text();
+
+        $formAction->apply(function () use($template)
+        {
+            $template->save();
+        });
     }
 
     protected function getRandomParentNode() :? AbstractNodeEntity
