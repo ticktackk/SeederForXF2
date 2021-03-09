@@ -9,6 +9,7 @@ CHANGELOG
 - **New:** Seed for discouraged IP addresses (#41)
 - **New:** Seed for banned users (#43)
 - **New:** Seed for IP address bans (#44)
+- **New:** Seed for rejected users (#42)
 - **Fix:** Threads cannot be seeded (#36)
 
 ## 1.1.0 Alpha 3 (`1010013`)
