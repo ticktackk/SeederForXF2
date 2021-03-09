@@ -31,14 +31,7 @@ class MediaGalleryItem extends AbstractSeed
 
         do
         {
-            if ($faker->boolean)
-            {
-                $container = $this->findRandomAlbum();
-            }
-            else
-            {
-                $container = $this->findRandomAlbum();
-            }
+            $container = $faker->boolean ? $this->findRandomAlbum() : $this->findRandomCategory();
         }
         while ($container === null);
 

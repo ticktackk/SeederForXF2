@@ -2,9 +2,6 @@
 
 namespace TickTackk\Seeder\Seed;
 
-use SV\Threadmarks\Entity\ThreadmarkContainerInterface as ThreadmarkContainerEntityInterface;
-use SV\Threadmarks\Entity\ThreadmarkContentInterface as ThreadmarkContentEntityInterface;
-use XF\Mvc\Entity\Entity;
 use SV\Threadmarks\XF\Entity\Post as ExtendedPostEntityFromThreadmarks;
 
 class PostThreadmark extends AbstractContentThreadmark
