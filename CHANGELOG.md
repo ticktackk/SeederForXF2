@@ -15,6 +15,7 @@ CHANGELOG
 - **New:** Seed for spam cleaner log (#47)
 - **New:** Seed for email bounce log (#48)
 - **Fix:** Threads cannot be seeded (#36)
+- **Fix:** Master template is not created for page nodes (#49)
 
 ## 1.1.0 Alpha 3 (`1010013`)
 
