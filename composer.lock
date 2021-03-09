@@ -49,6 +49,10 @@
                 "provider",
                 "youtube"
             ],
+            "support": {
+                "issues": "https://github.com/aalaap/faker-youtube/issues",
+                "source": "https://github.com/aalaap/faker-youtube/tree/1.2.1"
+            },
             "time": "2018-02-15T06:24:43+00:00"
         },
         {
@@ -94,20 +98,24 @@
                 "picsum.photos",
                 "provider"
             ],
+            "support": {
+                "issues": "https://github.com/bluemmb/Faker-PicsumPhotos/issues",
+                "source": "https://github.com/bluemmb/Faker-PicsumPhotos/tree/master"
+            },
             "time": "2018-08-18T10:17:02+00:00"
         },
         {
             "name": "fzaninotto/faker",
-            "version": "v1.9.1",
+            "version": "v1.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fzaninotto/Faker.git",
-                "reference": "fc10d778e4b84d5bd315dad194661e091d307c6f"
+                "reference": "848d8125239d7dbf8ab25cb7f054f1a630e68c2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/fc10d778e4b84d5bd315dad194661e091d307c6f",
-                "reference": "fc10d778e4b84d5bd315dad194661e091d307c6f",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/848d8125239d7dbf8ab25cb7f054f1a630e68c2e",
+                "reference": "848d8125239d7dbf8ab25cb7f054f1a630e68c2e",
                 "shasum": ""
             },
             "require": {
@@ -144,7 +152,12 @@
                 "faker",
                 "fixtures"
             ],
-            "time": "2019-12-12T13:22:17+00:00"
+            "support": {
+                "issues": "https://github.com/fzaninotto/Faker/issues",
+                "source": "https://github.com/fzaninotto/Faker/tree/v1.9.2"
+            },
+            "abandoned": true,
+            "time": "2020-12-11T09:56:16+00:00"
         }
     ],
     "packages-dev": [],
@@ -157,5 +170,5 @@
         "ext-fileinfo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
