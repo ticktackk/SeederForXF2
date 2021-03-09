@@ -12,6 +12,7 @@ CHANGELOG
 - **New:** Seed for rejected users (#42)
 - **New:** Seed for server error logs (#45)
 - **New:** Seed for spam trigger log (#46)
+- **New:** Seed for spam cleaner log (#47)
 - **Fix:** Threads cannot be seeded (#36)
 
 ## 1.1.0 Alpha 3 (`1010013`)
