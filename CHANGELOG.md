@@ -7,6 +7,7 @@ CHANGELOG
 - **New:** Seed for post threadmark (#38)
 - **New:** Seed for conversation message threadmark (#39)
 - **New:** Seed for discouraged IP addresses (#41)
+- **New:** Seed for banned users (#43)
 - **Fix:** Threads cannot be seeded (#36)
 
 ## 1.1.0 Alpha 3 (`1010013`)
