@@ -1,6 +1,10 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Release Candidate 1 (`1010051`)
+
+- **New:** Seed for thread prefix (#50)
+
 ## 1.1.0 Alpha 4 (`1010014`)
 
 - **New:** Seed for threadmark category (#37)
