@@ -27,7 +27,7 @@ abstract class AbstractContentPrefix extends AbstractSeed
         $containerIds = $this->finderWithRandomOrder($this->getContainerIdentifier())->fetch()->keys();
         \shuffle($containerIds);
 
-        return \array_slice($containerIds, $this->faker()->numberBetween(1, \count($containerIds)));
+        return \array_slice($containerIds, $this->faker()->numberBetween(0, \count($containerIds)));
     }
 
     /**

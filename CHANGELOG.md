@@ -4,6 +4,7 @@ CHANGELOG
 ## 1.1.0 Release Candidate 1 (`1010051`)
 
 - **New:** Seed for thread prefix (#50)
+- **New:** Seed for resource prefix (#51)
 
 ## 1.1.0 Alpha 4 (`1010014`)
 
