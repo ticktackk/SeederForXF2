@@ -7,6 +7,7 @@ CHANGELOG
 - **New:** Seed for resource prefix (#51)
 - **New:** Seed for thread prefix group (#52)
 - **New:** Seed for resource prefix group (#53)
+- **Change:** Switch to `fakerphp/faker` package (#54)
 
 ## 1.1.0 Alpha 4 (`1010014`)
 
