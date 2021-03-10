@@ -1,6 +1,14 @@
 CHANGELOG
 ==========================
 
+## 1.1.0 Release Candidate 1 (`1010051`)
+
+- **New:** Seed for thread prefix (#50)
+- **New:** Seed for resource prefix (#51)
+- **New:** Seed for thread prefix group (#52)
+- **New:** Seed for resource prefix group (#53)
+- **Change:** Switch to `fakerphp/faker` package (#54)
+
 ## 1.1.0 Alpha 4 (`1010014`)
 
 - **New:** Seed for threadmark category (#37)
